@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảng Homestay</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Danh sách Homestay</h2>
+  <table id="homestayTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Ward</th>
+        <th>District</th>
+        <th>Province</th>
+        <th>Created At</th>
+        <th>Updated At</th>
+        <th>User ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Dữ liệu sẽ được chèn vào đây bằng JavaScript -->
+    </tbody>
+  </table>
+
+  <script>
+    // URL API mà bạn đã triển khai để lấy dữ liệu homestay
+    const apiUrl = 'https://localhost:7246/api/Homestays';
+
+    async function fetchHomestays() {
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log("Dữ liệu nhận được từ API:", data); // Kiểm tra dữ liệu trong console
+
+    const tableBody = document.getElementById('homestayTable').querySelector('tbody');
+    tableBody.innerHTML = '';
+    data.forEach(homestay => {
+      // Chuyển đổi timestamp kiểu long sang định dạng ngày
+      const createdAt = new Date(homestay.CreatedAt * 1000).toLocaleDateString();
+      const updatedAt = new Date(homestay.UpdatedAt * 1000).toLocaleDateString();
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${homestay.homestayId}</td>
+        <td>${homestay.name}</td>
+        <td>${homestay.description || ''}</td>
+        <td>${homestay.ward || ''}</td>
+        <td>${homestay.district || ''}</td>
+        <td>${homestay.province || ''}</td>
+        <td>${homestay.createdAt}</td>
+        <td>${homestay.updatedAt}</td>
+        <td>${homestay.userId}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu từ API:', error);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', fetchHomestays);
+
+
+    // Gọi hàm fetchHomestays khi trang được tải
+    document.addEventListener('DOMContentLoaded', fetchHomestays);
+  </script>
+
+</body>
+</html>

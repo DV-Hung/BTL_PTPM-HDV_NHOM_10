@@ -1,0 +1,6 @@
+@GOATBOOKING_HostAddress = http://localhost:5069
+
+GET {{GOATBOOKING_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

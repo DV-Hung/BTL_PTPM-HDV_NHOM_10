@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Trang Chủ</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+      }
+      .dashboard {
+        padding: 20px;
+      }
+      .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .card-header {
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+      .stats-card {
+        color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      .stats-bookings {
+        background-color: #007bff;
+      }
+      .stats-revenue {
+        background-color: #28a745;
+      }
+      .stats-users {
+        background-color: #17a2b8;
+      }
+      .stats-reviews {
+        background-color: #ffc107;
+      }
+      .chart-container {
+        height: 300px;
+        padding: 15px;
+        background: #fff;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body2>
+    <div class="dashboard container-fluid">
+      <h2 class="mb-4">Dashboard</h2>
+
+      <!-- Overview Cards -->
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card stats-card stats-bookings">
+            <h4>Bookings</h4>
+            <p class="display-4">120</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card stats-card stats-revenue">
+            <h4>Revenue</h4>
+            <p class="display-4">$15,000</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card stats-card stats-users">
+            <h4>New Users</h4>
+            <p class="display-4">200</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card stats-card stats-reviews">
+            <h4>Reviews</h4>
+            <p class="display-4">450</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Combined Charts Section -->
+      <div class="row">
+        <!-- Line-Bar Chart for Revenue and Bookings -->
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">Revenue and Bookings Over Time</div>
+            <div class="card-body chart-container">
+              <canvas id="lineBarChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pie-Doughnut Chart for User Distribution -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Customer Distribution by Region</div>
+            <div class="card-body chart-container">
+              <canvas id="pieDoughnutChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Bookings Table -->
+      <div class="row mt-4">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">Recent Bookings</div>
+            <div class="card-body">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Booking ID</th>
+                    <th>User</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>12345</td>
+                    <td>Jane Doe</td>
+                    <td>2024-11-13</td>
+                    <td><span class="badge badge-success">Confirmed</span></td>
+                  </tr>
+                  <tr>
+                    <td>12346</td>
+                    <td>John Smith</td>
+                    <td>2024-11-12</td>
+                    <td><span class="badge badge-warning">Pending</span></td>
+                  </tr>
+                  <tr>
+                    <td>12347</td>
+                    <td>Mary Johnson</td>
+                    <td>2024-11-11</td>
+                    <td><span class="badge badge-danger">Cancelled</span></td>
+                  </tr>
+                  <tr>
+                    <td>12348</td>
+                    <td>Steve Brown</td>
+                    <td>2024-11-10</td>
+                    <td><span class="badge badge-success">Confirmed</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart.js Scripts -->
+    <script>
+      // Line-Bar Chart for Revenue and Bookings Over Time
+      const ctxLineBar = document
+        .getElementById("lineBarChart")
+        .getContext("2d");
+      const lineBarChart = new Chart(ctxLineBar, {
+        type: "bar",
+        data: {
+          labels: [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ],
+          datasets: [
+            {
+              type: "line",
+              label: "Revenue ($)",
+              data: [
+                5000, 7000, 8000, 6000, 9000, 11000, 7000, 13000, 15000, 12000,
+                17000, 18000,
+              ],
+              borderColor: "#28a745",
+              backgroundColor: "rgba(40, 167, 69, 0.2)",
+              tension: 0.3,
+              fill: true,
+            },
+            {
+              type: "bar",
+              label: "Bookings",
+              data: [50, 60, 70, 55, 80, 90, 70, 65, 75, 90, 85, 95],
+              backgroundColor: "#007bff",
+              borderColor: "#007bff",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true },
+          },
+        },
+      });
+
+      // Pie-Doughnut Chart for Customer Distribution by Region
+      const ctxPieDoughnut = document
+        .getElementById("pieDoughnutChart")
+        .getContext("2d");
+      const pieDoughnutChart = new Chart(ctxPieDoughnut, {
+        type: "doughnut",
+        data: {
+          labels: [
+            "Asia",
+            "Europe",
+            "North America",
+            "South America",
+            "Oceania",
+          ],
+          datasets: [
+            {
+              label: "Customer Distribution",
+              data: [35, 25, 15, 10, 15],
+              backgroundColor: [
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56",
+                "#4BC0C0",
+                "#9966FF",
+              ],
+              hoverOffset: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "bottom" },
+          },
+        },
+      });
+    </script>
+  </body2>
+</html>

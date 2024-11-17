@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Homestay</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+    .form-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .btn-save, .btn-edit, .btn-delete {
+      padding: 10px 15px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .btn-save {
+      background-color: #4CAF50;
+    }
+    .btn-save:hover {
+      background-color: #45a049;
+    }
+    .btn-edit {
+      background-color: #008CBA;
+    }
+    .btn-edit:hover {
+      background-color: #007bb5;
+    }
+    .btn-delete {
+      background-color: #f44336;
+    }
+    .btn-delete:hover {
+      background-color: #e53935;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Thêm hoặc Sửa Homestay</h2>
+  <form id="homestayForm">
+    <div>
+      <label for="homestayId">Homestay ID</label>
+      <input type="number" id="homestayId" readonly>
+    </div>
+    <div>
+      <label for="name">Name</label>
+      <input type="text" id="name" required>
+    </div>
+    <div>
+      <label for="description">Description</label>
+      <input type="text" id="description">
+    </div>
+    <div>
+      <label for="ward">Ward</label>
+      <input type="text" id="ward">
+    </div>
+    <div>
+      <label for="district">District</label>
+      <input type="text" id="district">
+    </div>
+    <div>
+      <label for="province">Province</label>
+      <input type="text" id="province">
+    </div>
+    <div>
+      <label for="userId">User ID</label>
+      <input type="number" id="userId" required>
+    </div>
+    <button type="button" class="btn-save" onclick="saveHomestay()">Lưu</button>
+  </form>
+</div>
+
+<h2>Danh sách Homestay</h2>
+<table id="homestayTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Ward</th>
+      <th>District</th>
+      <th>Province</th>
+      <th>Created At</th>
+      <th>Updated At</th>
+      <th>User ID</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Dữ liệu sẽ được chèn vào đây bằng JavaScript -->
+  </tbody>
+</table>
+
+<script>
+  const apiUrl = 'https://localhost:7246/api/Homestays';
+
+  async function fetchHomestays() {
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+
+      const tableBody = document.getElementById('homestayTable').querySelector('tbody');
+      tableBody.innerHTML = '';
+      data.forEach(homestay => {
+        const createdAt = new Date(homestay.createdAt * 1000).toLocaleString();
+        const updatedAt = new Date(homestay.updatedAt * 1000).toLocaleString();
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${homestay.homestayId}</td>
+          <td>${homestay.name}</td>
+          <td>${homestay.description || ''}</td>
+          <td>${homestay.ward || ''}</td>
+          <td>${homestay.district || ''}</td>
+          <td>${homestay.province || ''}</td>
+          <td>${createdAt}</td>
+          <td>${updatedAt}</td>
+          <td>${homestay.userId}</td>
+          <td>
+            <button class="btn-edit" onclick="editHomestay(${homestay.homestayId})">Sửa</button>
+            <button class="btn-delete" onclick="deleteHomestay(${homestay.homestayId})">Xóa</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu từ API:', error);
+    }
+  }
+
+  async function saveHomestay() {
+    const homestay = {
+      HomestayId: parseInt(document.getElementById('homestayId').value) || 0,
+      Name: document.getElementById('name').value,
+      Description: document.getElementById('description').value,
+      Ward: document.getElementById('ward').value,
+      District: document.getElementById('district').value,
+      Province: document.getElementById('province').value,
+      CreatedAt: Math.floor(Date.now() / 1000),
+      UpdatedAt: Math.floor(Date.now() / 1000),
+      UserId: parseInt(document.getElementById('userId').value)
+    };
+
+    try {
+      const method = homestay.HomestayId ? 'PUT' : 'POST';
+      const url = homestay.HomestayId ? `${apiUrl}/${homestay.HomestayId}` : apiUrl;
+      
+      const response = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(homestay)
+      });
+
+      if (response.ok) {
+        alert('Homestay đã được lưu thành công!');
+        document.getElementById('homestayForm').reset();
+        fetchHomestays();
+      } else {
+        const errorData = await response.json();
+        alert('Lỗi khi lưu homestay: ' + errorData.message);
+      }
+    } catch (error) {
+      console.error('Lỗi:', error);
+      alert('Không thể kết nối đến API.');
+    }
+  }
+
+  async function editHomestay(id) {
+    try {
+      const response = await fetch(`${apiUrl}/${id}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const homestay = await response.json();
+
+      document.getElementById('homestayId').value = homestay.homestayId;
+      document.getElementById('name').value = homestay.name;
+      document.getElementById('description').value = homestay.description;
+      document.getElementById('ward').value = homestay.ward;
+      document.getElementById('district').value = homestay.district;
+      document.getElementById('province').value = homestay.province;
+      document.getElementById('userId').value = homestay.userId;
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu homestay:', error);
+    }
+  }
+
+  async function deleteHomestay(id) {
+    if (confirm('Bạn có chắc chắn muốn xóa homestay này không?')) {
+      try {
+        const response = await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          alert('Homestay đã được xóa thành công!');
+          fetchHomestays();
+        } else {
+          const errorData = await response.json();
+          alert('Lỗi khi xóa homestay: ' + errorData.message);
+        }
+      } catch (error) {
+        console.error('Lỗi khi xóa homestay:', error);
+        alert('Không thể kết nối đến API.');
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', fetchHomestays);
+</script>
+
+</body>
+</html>

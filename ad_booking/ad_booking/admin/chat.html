@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin GoatBooking</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        overflow: hidden; /* Loại bỏ thanh cuộn của toàn bộ trang */
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        color: #fff;
+        position: fixed;
+        width: 250px;
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        transition: width 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .sidebar.collapsed {
+        width: 0;
+        overflow: hidden;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .sidebar a,
+      .sidebar h2 {
+        color: #fff;
+        text-decoration: none;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+      }
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 20px;
+        display: none;
+      }
+      .sidebar .submenu .nav-link {
+        font-size: 14px;
+        padding: 5px 20px;
+        color: #adb5bd;
+      }
+      .sidebar .submenu .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar .badge-info {
+        background-color: #17a2b8;
+      }
+      .sidebar .badge-danger {
+        background-color: #dc3545;
+      }
+      .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        height: 700px;
+      }
+      .content.collapsed {
+        margin-left: 0;
+      }
+      .content::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .content::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+      }
+    </style>
+    <style>
+      /* Add your styles here */
+      body2 {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+      .chat-container {
+        display: flex;
+        width: 110%;
+        height: 600px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .chat-list {
+        width: 30%;
+        border-right: 1px solid #ffffff;
+        padding: 15px;
+        background-color: #3daeff;
+        overflow-y: auto;
+        max-height: 600px;
+      }
+      .search-bar {
+        margin-bottom: 10px;
+      }
+      .search-bar input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .chat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background-color: #ffffff;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+      }
+      .chat-item:hover {
+        background-color: #f1f1f1;
+      }
+      .chat-main {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        max-height: 500px;
+      }
+      .chat-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #0071c2;
+        padding-bottom: 10px;
+      }
+      .chat-header img {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+      }
+      .chat-message {
+        background-color: #e8f5ff;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        max-width: 70%;
+      }
+      .chat-footer {
+        display: flex;
+        margin-top: 10px;
+      }
+      .chat-footer input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-right: 10px;
+      }
+      .chat-footer button {
+        padding: 10px 20px;
+        background-color: #0071c2;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .chat-footer button:hover {
+        background-color: #4b2c90;
+      }
+      .timestamp {
+        font-size: 12px;
+        color: #999;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle submenu display
+        const menuItems = document.querySelectorAll(".nav-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const submenu = this.querySelector(".submenu");
+            if (submenu) {
+              submenu.style.display =
+                submenu.style.display === "none" || submenu.style.display === ""
+                  ? "block"
+                  : "none";
+            }
+          });
+        });
+
+        // Toggle sidebar visibility
+        const toggleButton = document.getElementById("sidebarToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("collapsed");
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2 class="text-center mb-4" style="font-size: 40px">
+        Admin <br />GoatBooking
+      </h2>
+      <img
+        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+        alt="Profile"
+        class="rounded-circle mx-auto d-block mb-4"
+        width="100"
+      />
+      <p class="text-center"></p>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tachometer-alt"></i> Trang chủ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="homestay.html">◯ Homestay</a></li>
+            <li><a class="nav-link" href="room.html">◯ Room</a></li>
+            <li><a class="nav-link" href="user.html">◯ User</a></li>
+            <li>
+              <a class="nav-link" href="service.html">◯ Service</a>
+            </li>
+            <li><a class="nav-link" href="review.html">◯ Review</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="tienich.html"
+            ><i class="fas fa-th"></i> Tiện ích
+            <span class="badge badge-danger">New</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-bar"></i> Thống kê
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="thongke_3.html"
+                >◯ User-Homestay-Rooms</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="thongke_2.html">◯ Review - Service</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-pie"></i> Biểu đồ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="bieudotron.html">◯ Biểu đồ tròn</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudoduong.html">◯ Biểu đồ đường</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudocot.html">◯ Biểu đồ cột</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudovung.html">◯ Biểu đồ vùng</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Xem thêm -->
+        <li class="nav-item">
+          <span class="nav-link">Xem thêm</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="lich.html"
+            ><i class="fas fa-calendar-alt"></i> Lịch
+            <span class="badge badge-info">2</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="bosuutap.html"
+            ><i class="fas fa-image"></i>Bộ sưu tập<span
+              class="badge badge-info"
+              >99+</span
+            ></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tools"></i>Hỗ trợ<i
+              class="fas fa-chevron-down"
+            ></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="chat.html">◯ Chat</a></li>
+            <li><a class="nav-link" href="email.html">◯ Mailbox</a></li>
+            <li><a class="nav-link" href="faq.html">◯ FAQ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="datlai.html" onclick="openResetModal()">
+            <i class="fas fa-sync-alt"></i>Đặt lại<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fa fa-user-circle"></i> Tài khoản
+            <i class="fas fa-chevron-down-o"></i
+          ></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>Đăng xuất<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <button
+          id="sidebarToggle"
+          class="btn btn-outline-secondary mr-2"
+          title="Toggle Sidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">Contact</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-comments"></i
+              ><span class="badge badge-danger">3</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="badge badge-warning">15</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-4">
+        <body2>
+          <div class="chat-container">
+            <div class="chat-list">
+              <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm..." />
+              </div>
+              <div id="chatList">
+                <!-- List of chats will appear here -->
+              </div>
+            </div>
+            <div class="chat-main" id="chatMain">
+              <div class="chat-header">
+                <img
+                  src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+                  alt="User"
+                />
+                <p><strong>Chi tiết cuộc trò chuyện</strong></p>
+              </div>
+              <div id="chatDetails"></div>
+              <div class="chat-footer">
+                <input
+                  type="text"
+                  id="chatInput"
+                  placeholder="Nhập nội dung trả lời..."
+                />
+                <button onclick="sendReply()">Gửi</button>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            const chatContents = [
+              {
+                content: "Xin chào, tôi cần hỗ trợ về việc đặt phòng.",
+                timestamp: "28/10/2024 08:30",
+                accountName: "Nguyen Van A",
+                email: "nguyenvana@example.com",
+              },
+              {
+                content: "Phòng đã được xác nhận chưa ạ?",
+                timestamp: "27/10/2024 15:15",
+                accountName: "Le Thi B",
+                email: "letb@example.com",
+              },
+              {
+                content: "Tôi muốn hủy đặt phòng, cần làm thế nào?",
+                timestamp: "26/10/2024 09:45",
+                accountName: "Tran Van C",
+                email: "tranc@example.com",
+              },
+              {
+                content: "Xin chào, tôi cần hỗ trợ về việc đặt phòng.",
+                timestamp: "28/10/2024 08:30",
+                accountName: "Nguyen Van A",
+                email: "nguyenvana@example.com",
+              },
+              {
+                content: "Phòng đã được xác nhận chưa ạ?",
+                timestamp: "27/10/2024 15:15",
+                accountName: "Le Thi B",
+                email: "letb@example.com",
+              },
+              {
+                content: "Tôi muốn hủy đặt phòng, cần làm thế nào?",
+                timestamp: "26/10/2024 09:45",
+                accountName: "Tran Van C",
+                email: "tranc@example.com",
+              },
+              {
+                content: "Chúng tôi có thể đổi ngày check-in không? Cảm ơn.",
+                timestamp: "25/10/2024 14:00",
+                accountName: "Mai Thi D",
+                email: "maithi.d@example.com",
+              },
+              {
+                content: "Có thể thêm giường phụ vào phòng này không?",
+                timestamp: "24/10/2024 11:00",
+                accountName: "Pham Minh E",
+                email: "phame@example.com",
+              },
+              {
+                content: "Mình muốn hỏi về dịch vụ đưa đón sân bay.",
+                timestamp: "23/10/2024 17:45",
+                accountName: "Hoang Thi F",
+                email: "hoangtf@example.com",
+              },
+              {
+                content: "Tôi cần thông tin về bữa sáng tại khách sạn.",
+                timestamp: "22/10/2024 09:00",
+                accountName: "Vu Thi G",
+                email: "vuthig@example.com",
+              },
+              {
+                content: "Liệu có giảm giá nếu tôi đặt phòng dài hạn không?",
+                timestamp: "21/10/2024 12:30",
+                accountName: "Bui Thi H",
+                email: "buithi.h@example.com",
+              },
+            ];
+
+            // Lấy dữ liệu mới từ localStorage
+            const contactData = JSON.parse(localStorage.getItem("contactData"));
+
+            if (contactData) {
+              // Thêm tin nhắn mới lên đầu danh sách
+              const timestamp = new Date().toLocaleString();
+              const newMessage = {
+                content: contactData.message,
+                timestamp,
+                accountName: contactData.name,
+                email: contactData.email,
+              };
+
+              chatContents.unshift(newMessage); // Đưa tin nhắn mới vào đầu mảng
+
+              // Hiển thị tin nhắn mới ở đầu giao diện chat
+              chatDetails.innerHTML =
+                `
+              <div class="chat-message">
+                <p><strong>Tên tài khoản:</strong> ${newMessage.accountName}</p>
+                <p><strong>Email:</strong> ${newMessage.email}</p>
+                <p><strong>Nội dung:</strong> ${newMessage.content}</p>
+                <p><small>Gửi lúc: ${newMessage.timestamp}</small></p>
+              </div>
+            ` + chatDetails.innerHTML; // Ghi đè để tin nhắn mới nằm ở trên
+
+              // Xóa dữ liệu sau khi hiển thị nếu cần
+              localStorage.removeItem("contactData");
+            }
+            function generateChatList() {
+              const chatList = document.getElementById("chatList");
+              chatList.innerHTML = "";
+
+              chatContents.forEach((chat, index) => {
+                const chatItem = document.createElement("div");
+                chatItem.className = "chat-item";
+                chatItem.innerHTML = `
+                          <span>${chat.content}</span>
+                          <span class="timestamp">${chat.timestamp}</span>
+                      `;
+                chatItem.onclick = function () {
+                  showChatDetail(chat);
+                };
+                chatList.appendChild(chatItem);
+              });
+            }
+
+            function showChatDetail(chat) {
+              const chatDetails = document.getElementById("chatDetails");
+              chatDetails.innerHTML = `
+                      <div class="chat-message">
+                          <p><strong>Tên tài khoản:</strong> ${chat.accountName}</p>
+                          <p><strong>Email:</strong> ${chat.email}</p>
+                          <p><strong>Nội dung:</strong> ${chat.content}</p>
+                          <p><small>Gửi lúc: ${chat.timestamp}</small></p>
+                      </div>
+                  `;
+            }
+
+            // Filter chat list based on search input
+            document
+              .getElementById("searchInput")
+              .addEventListener("input", function () {
+                const filter = this.value.toLowerCase();
+                const chatItems = document.querySelectorAll(".chat-item");
+                chatItems.forEach((item) => {
+                  const text = item.textContent.toLowerCase();
+                  item.style.display = text.includes(filter) ? "" : "none";
+                });
+              });
+
+            // Function to handle sending a reply
+            function sendReply() {
+              const chatInput = document.getElementById("chatInput");
+              const replyContent = chatInput.value.trim();
+              const timestamp = new Date().toLocaleString();
+
+              if (replyContent) {
+                // Display the reply in the chat interface
+                const chatDetails = document.getElementById("chatDetails");
+                chatDetails.innerHTML += `
+                  <div class="chat-message">
+                    <p><strong>Trả lời:</strong> ${replyContent}</p>
+                    <p><small>Gửi lúc: ${timestamp}</small></p>
+                  </div>
+                `;
+                chatInput.value = "";
+
+                // Save the message to "sent emails" in localStorage
+                saveToSentEmails(replyContent, timestamp);
+              } else {
+                alert("Vui lòng nhập nội dung trả lời.");
+              }
+            }
+
+            function saveToSentEmails(content, timestamp) {
+              const sentEmails =
+                JSON.parse(localStorage.getItem("sentEmails")) || [];
+              sentEmails.push({
+                content,
+                timestamp,
+                recipient: "Tên Người Nhận", // Modify this as needed
+              });
+              localStorage.setItem("sentEmails", JSON.stringify(sentEmails));
+              alert("Email đã được lưu vào Thư đã gửi.");
+            }
+          </script>
+          <script>
+            let selectedChat = null; // Biến để lưu thông tin cuộc trò chuyện đã chọn
+
+            function generateChatList() {
+              const chatList = document.getElementById("chatList");
+              chatList.innerHTML = "";
+
+              chatContents.forEach((chat) => {
+                const chatItem = document.createElement("div");
+                chatItem.className = "chat-item";
+                chatItem.innerHTML = `
+                  <span>${chat.content}</span>
+                  <span class="timestamp">${chat.timestamp}</span>
+                `;
+                chatItem.onclick = function () {
+                  showChatDetail(chat);
+                  selectedChat = chat; // Lưu thông tin cuộc trò chuyện đã chọn
+                };
+                chatList.appendChild(chatItem);
+              });
+            }
+
+            function sendReply() {
+              const chatInput = document.getElementById("chatInput");
+              const replyContent = chatInput.value.trim();
+              const timestamp = new Date().toLocaleString();
+
+              if (replyContent && selectedChat) {
+                // Gọi hàm lưu tin nhắn vào localStorage
+                saveToSentEmails(
+                  selectedChat.accountName,
+                  replyContent,
+                  timestamp
+                );
+
+                // Hiển thị tin nhắn trả lời trên giao diện
+                const chatDetails = document.getElementById("chatDetails");
+                chatDetails.innerHTML += `
+                  <div class="chat-message">
+                    <p><strong>Trả lời:</strong> ${replyContent}</p>
+                    <p><small>Gửi lúc: ${timestamp}</small></p>
+                  </div>
+                `;
+                chatInput.value = ""; // Xóa nội dung đã nhập sau khi gửi
+              } else {
+                alert(
+                  "Vui lòng chọn cuộc trò chuyện và nhập nội dung trả lời."
+                );
+              }
+            }
+
+            function saveToSentEmails(accountName, content, timestamp) {
+              // Lấy danh sách "Thư đã gửi" hiện có trong localStorage hoặc khởi tạo mảng trống
+              const sentEmails =
+                JSON.parse(localStorage.getItem("sentEmails")) || [];
+
+              // Thêm email mới vào đầu danh sách
+              sentEmails.unshift({
+                recipientName: accountName,
+                content,
+                timestamp,
+              });
+
+              // Cập nhật lại dữ liệu "Thư đã gửi" trong localStorage
+              localStorage.setItem("sentEmails", JSON.stringify(sentEmails));
+              alert("Đã gửi thành công!");
+            }
+
+            window.onload = generateChatList;
+          </script>
+        </body2>
+      </div>
+
+      <div class="footer">
+        <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+        <p>Version 3.2.0-rc</p>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      function logout() {
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = "dangnhap_ad.html";
+      }
+    </script>
+  </body>
+</html>

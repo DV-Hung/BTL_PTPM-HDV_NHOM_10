@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin GoatBooking</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        overflow: hidden; /* Loại bỏ thanh cuộn của toàn bộ trang */
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        color: #fff;
+        position: fixed;
+        width: 250px;
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        transition: width 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .sidebar.collapsed {
+        width: 0;
+        overflow: hidden;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .sidebar a,
+      .sidebar h2 {
+        color: #fff;
+        text-decoration: none;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+      }
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 20px;
+        display: none;
+      }
+      .sidebar .submenu .nav-link {
+        font-size: 14px;
+        padding: 5px 20px;
+        color: #adb5bd;
+      }
+      .sidebar .submenu .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar .badge-info {
+        background-color: #17a2b8;
+      }
+      .sidebar .badge-danger {
+        background-color: #dc3545;
+      }
+      .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        height: 700px;
+      }
+      .content.collapsed {
+        margin-left: 0;
+      }
+      .content::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .content::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+      }
+    </style>
+    <style>
+      body2 {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .upload-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .upload-container h2 {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .upload-container input[type="file"] {
+        display: none;
+      }
+      .upload-container .upload-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        text-align: center;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .upload-container input[type="text"],
+      .upload-container textarea {
+        width: 100%;
+        padding: 8px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .upload-container textarea {
+        resize: vertical;
+      }
+      .upload-container button {
+        width: 100%;
+        padding: 10px;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .uploaded-items {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      .item {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+        text-align: center;
+      }
+      .item img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .item-info h4 {
+        margin: 10px 0 5px;
+        font-size: 18px;
+      }
+      .item-info p {
+        margin: 5px 0;
+        color: #555;
+      }
+      .item-actions {
+        margin-top: 10px;
+      }
+      .item-actions button {
+        padding: 5px 10px;
+        margin: 0 5px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 14px;
+      }
+      .edit-btn {
+        background-color: #ffc107;
+      }
+      .delete-btn {
+        background-color: #dc3545;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle submenu display
+        const menuItems = document.querySelectorAll(".nav-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const submenu = this.querySelector(".submenu");
+            if (submenu) {
+              submenu.style.display =
+                submenu.style.display === "none" || submenu.style.display === ""
+                  ? "block"
+                  : "none";
+            }
+          });
+        });
+
+        // Toggle sidebar visibility
+        const toggleButton = document.getElementById("sidebarToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("collapsed");
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2 class="text-center mb-4" style="font-size: 40px">
+        Admin <br />GoatBooking
+      </h2>
+      <img
+        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+        alt="Profile"
+        class="rounded-circle mx-auto d-block mb-4"
+        width="100"
+      />
+      <p class="text-center"></p>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tachometer-alt"></i> Trang chủ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="homestay.html">◯ Homestay</a></li>
+            <li><a class="nav-link" href="room.html">◯ Room</a></li>
+            <li><a class="nav-link" href="user.html">◯ User</a></li>
+            <li>
+              <a class="nav-link" href="service.html">◯ Service</a>
+            </li>
+            <li><a class="nav-link" href="review.html">◯ Review</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-th"></i> Tiện ích
+            <span class="badge badge-danger">New</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-bar"></i> Thống kê
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="thongke_3.html"
+                >◯ User-Homestay-Rooms</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="thongke_2.html">◯ Review - Service</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-pie"></i> Biểu đồ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="bieudotron.html">◯ Biểu đồ tròn</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudoduong.html">◯ Biểu đồ đường</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudocot.html">◯ Biểu đồ cột</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudovung.html">◯ Biểu đồ vùng</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Xem thêm -->
+        <li class="nav-item">
+          <span class="nav-link">Xem thêm</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="lich.html"
+            ><i class="fas fa-calendar-alt"></i> Lịch
+            <span class="badge badge-info">2</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="bosuutap.html"
+            ><i class="fas fa-image"></i>Bộ sưu tập<span
+              class="badge badge-info"
+              >99+</span
+            ></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tools"></i>Hỗ trợ<i
+              class="fas fa-chevron-down"
+            ></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="chat.html">◯ Chat</a></li>
+            <li><a class="nav-link" href="email.html">◯ Mailbox</a></li>
+            <li><a class="nav-link" href="faq.html">◯ FAQ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="datlai.html" onclick="openResetModal()">
+            <i class="fas fa-sync-alt"></i>Đặt lại<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fa fa-user-circle"></i> Tài khoản
+            <i class="fas fa-chevron-down-o"></i
+          ></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>Đăng xuất<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <button
+          id="sidebarToggle"
+          class="btn btn-outline-secondary mr-2"
+          title="Toggle Sidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">Contact</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-comments"></i
+              ><span class="badge badge-danger">3</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="badge badge-warning">15</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-4">
+        <body2>
+          <div class="upload-container">
+            <h2>Upload and Enter Information</h2>
+            <label for="image-upload" class="upload-btn">Choose Image</label>
+            <input
+              type="file"
+              id="image-upload"
+              accept="image/*"
+              onchange="previewImage(event)"
+            />
+            <img
+              id="image-preview"
+              src=""
+              alt="Preview"
+              style="
+                width: 100%;
+                display: none;
+                margin-top: 10px;
+                border-radius: 8px;
+              "
+            />
+
+            <input type="text" id="item-name" placeholder="Enter name" />
+            <input
+              type="text"
+              id="item-price"
+              placeholder="Enter price (USD)"
+            />
+            <textarea
+              id="item-details"
+              rows="2"
+              placeholder="Enter details"
+            ></textarea>
+            <input
+              type="text"
+              id="item-location"
+              placeholder="Enter location"
+            />
+            <button onclick="uploadItem()">Upload</button>
+          </div>
+
+          <div class="uploaded-items" id="uploaded-items">
+            <!-- Uploaded items will appear here -->
+          </div>
+
+          <script>
+            document.addEventListener("DOMContentLoaded", displayItems);
+
+            function previewImage(event) {
+              const preview = document.getElementById("image-preview");
+              const file = event.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                  preview.src = e.target.result;
+                  preview.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+              }
+            }
+
+            function uploadItem() {
+              const name = document.getElementById("item-name").value;
+              const price = document.getElementById("item-price").value;
+              const details = document.getElementById("item-details").value;
+              const location = document.getElementById("item-location").value;
+              const imageSrc = document.getElementById("image-preview").src;
+
+              if (!name || !price || !details || !location || !imageSrc) {
+                alert("Please fill in all fields and select an image.");
+                return;
+              }
+
+              const newItem = {
+                name: name,
+                price: price,
+                details: details,
+                location: location,
+                imageSrc: imageSrc,
+              };
+
+              const storedItems =
+                JSON.parse(localStorage.getItem("uploadedItems")) || [];
+              storedItems.push(newItem);
+              localStorage.setItem(
+                "uploadedItems",
+                JSON.stringify(storedItems)
+              );
+
+              displayItems();
+
+              document.getElementById("item-name").value = "";
+              document.getElementById("item-price").value = "";
+              document.getElementById("item-details").value = "";
+              document.getElementById("item-location").value = "";
+              document.getElementById("image-upload").value = "";
+              document.getElementById("image-preview").src = "";
+              document.getElementById("image-preview").style.display = "none";
+            }
+
+            function displayItems() {
+              const itemsContainer = document.getElementById("uploaded-items");
+              itemsContainer.innerHTML = "";
+
+              const storedItems =
+                JSON.parse(localStorage.getItem("uploadedItems")) || [];
+              storedItems.forEach((item, index) => {
+                const itemContainer = document.createElement("div");
+                itemContainer.classList.add("item");
+
+                const img = document.createElement("img");
+                img.src = item.imageSrc;
+
+                const infoContainer = document.createElement("div");
+                infoContainer.classList.add("item-info");
+
+                const itemName = document.createElement("h4");
+                itemName.textContent = item.name;
+                const itemPrice = document.createElement("p");
+                itemPrice.textContent = `Price: $${item.price}`;
+                const itemDetails = document.createElement("p");
+                itemDetails.textContent = `Details: ${item.details}`;
+                const itemLocation = document.createElement("p");
+                itemLocation.textContent = `Location: ${item.location}`;
+
+                infoContainer.appendChild(itemName);
+                infoContainer.appendChild(itemPrice);
+                infoContainer.appendChild(itemDetails);
+                infoContainer.appendChild(itemLocation);
+
+                const actionsContainer = document.createElement("div");
+                actionsContainer.classList.add("item-actions");
+
+                const editButton = document.createElement("button");
+                editButton.textContent = "Edit";
+                editButton.classList.add("edit-btn");
+                editButton.onclick = function () {
+                  editItem(index);
+                };
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.classList.add("delete-btn");
+                deleteButton.onclick = function () {
+                  deleteItem(index);
+                };
+
+                actionsContainer.appendChild(editButton);
+                actionsContainer.appendChild(deleteButton);
+
+                itemContainer.appendChild(img);
+                itemContainer.appendChild(infoContainer);
+                itemContainer.appendChild(actionsContainer);
+
+                itemsContainer.appendChild(itemContainer);
+              });
+            }
+
+            function editItem(index) {
+              const storedItems = JSON.parse(
+                localStorage.getItem("uploadedItems")
+              );
+              const item = storedItems[index];
+
+              document.getElementById("item-name").value = item.name;
+              document.getElementById("item-price").value = item.price;
+              document.getElementById("item-details").value = item.details;
+              document.getElementById("item-location").value = item.location;
+              document.getElementById("image-preview").src = item.imageSrc;
+              document.getElementById("image-preview").style.display = "block";
+
+              deleteItem(index);
+            }
+
+            function deleteItem(index) {
+              const storedItems = JSON.parse(
+                localStorage.getItem("uploadedItems")
+              );
+              storedItems.splice(index, 1);
+              localStorage.setItem(
+                "uploadedItems",
+                JSON.stringify(storedItems)
+              );
+              displayItems();
+            }
+          </script>
+        </body2>
+      </div>
+
+      <div class="footer">
+        <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+        <p>Version 3.2.0-rc</p>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      function logout() {
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = "dangnhap_ad.html";
+      }
+    </script>
+  </body>
+</html>

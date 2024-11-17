@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin GoatBooking</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        overflow: hidden; /* Loại bỏ thanh cuộn của toàn bộ trang */
+        max-height: 100%;
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        color: #fff;
+        position: fixed;
+        width: 250px;
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        transition: width 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .sidebar.collapsed {
+        width: 0;
+        overflow: hidden;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .sidebar a,
+      .sidebar h2 {
+        color: #fff;
+        text-decoration: none;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+      }
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 20px;
+        display: none;
+      }
+      .sidebar .submenu .nav-link {
+        font-size: 14px;
+        padding: 5px 20px;
+        color: #adb5bd;
+      }
+      .sidebar .submenu .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar .badge-info {
+        background-color: #17a2b8;
+      }
+      .sidebar .badge-danger {
+        background-color: #dc3545;
+      }
+      .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        height: 700px;
+      }
+      .content.collapsed {
+        margin-left: 0;
+      }
+      .content::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .content::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+      }
+    </style>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body2 {
+        background-color: #f8f9fa;
+        color: #333;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #007bff;
+      }
+
+      .table-container {
+        margin: 20px 0;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        margin-bottom: 15px;
+        color: #495057;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead th {
+        background-color: #007bff;
+        color: #fff;
+        text-align: left;
+        padding: 10px;
+      }
+
+      tbody td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      tbody tr:hover {
+        background-color: #f1f1f1;
+      }
+
+      .progress-bar {
+        width: 100%;
+        background-color: #e9ecef;
+        border-radius: 8px;
+        height: 8px;
+        position: relative;
+        margin: 5px 0;
+      }
+
+      .progress {
+        height: 8px;
+        border-radius: 8px;
+      }
+
+      .label {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .red {
+        background-color: red;
+      }
+
+      .orange {
+        background-color: orange;
+      }
+
+      .blue {
+        background-color: blue;
+      }
+
+      .green {
+        background-color: green;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle submenu display
+        const menuItems = document.querySelectorAll(".nav-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const submenu = this.querySelector(".submenu");
+            if (submenu) {
+              submenu.style.display =
+                submenu.style.display === "none" || submenu.style.display === ""
+                  ? "block"
+                  : "none";
+            }
+          });
+        });
+
+        // Toggle sidebar visibility
+        const toggleButton = document.getElementById("sidebarToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("collapsed");
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2 class="text-center mb-4" style="font-size: 40px">
+        Admin <br />GoatBooking
+      </h2>
+      <img
+        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+        alt="Profile"
+        class="rounded-circle mx-auto d-block mb-4"
+        width="100"
+      />
+      <p class="text-center"></p>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tachometer-alt"></i> Trang chủ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="homestay.html">◯ Homestay</a></li>
+            <li><a class="nav-link" href="room.html">◯ Room</a></li>
+            <li><a class="nav-link" href="user.html">◯ User</a></li>
+            <li>
+              <a class="nav-link" href="service.html">◯ Service</a>
+            </li>
+            <li><a class="nav-link" href="review.html">◯ Review</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="tienich.html"
+            ><i class="fas fa-th"></i> Tiện ích
+            <span class="badge badge-danger">New</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-bar"></i> Thống kê
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="thongke_3.html"
+                >◯ User-Homestay-Rooms</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="thongke_2.html">◯ Review - Service</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-pie"></i> Biểu đồ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="bieudotron.html">◯ Biểu đồ tròn</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudoduong.html">◯ Biểu đồ đường</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudocot.html">◯ Biểu đồ cột</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudovung.html">◯ Biểu đồ vùng</a>
+            </li>
+          </ul>
+        </li>
+        <!-- Xem thêm -->
+        <li class="nav-item">
+          <span class="nav-link">Xem thêm</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="lich.html"
+            ><i class="fas fa-calendar-alt"></i> Lịch
+            <span class="badge badge-info">2</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="bosuutap.html"
+            ><i class="fas fa-image"></i>Bộ sưu tập<span
+              class="badge badge-info"
+              >99+</span
+            ></a
+          >
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tools"></i>Hỗ trợ<i
+              class="fas fa-chevron-down"
+            ></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="chat.html">◯ Chat</a></li>
+            <li><a class="nav-link" href="email.html">◯ Mailbox</a></li>
+            <li><a class="nav-link" href="faq.html">◯ FAQ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="datlai.html" onclick="openResetModal()">
+            <i class="fas fa-sync-alt"></i>Đặt lại<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fa fa-user-circle"></i> Tài khoản
+            <i class="fas fa-chevron-down-o"></i
+          ></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>Đăng xuất<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <button
+          id="sidebarToggle"
+          class="btn btn-outline-secondary mr-2"
+          title="Toggle Sidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">Contact</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-comments"></i
+              ><span class="badge badge-danger">3</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="badge badge-warning">15</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-4">
+        <body>
+          <div class="container" style="margin-top: -3%">
+            <h1>Danh sách nhiệm vụ</h1>
+
+            <!-- Bảng User -->
+            <div class="table-container">
+              <h2>User</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Nhiệm vụ</th>
+                    <th>Tiến bộ</th>
+                    <th>Nhãn</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Người dùng mới</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 60%; background-color: orange"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label orange">60%</span></td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Người dùng tiềm năng</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 45%; background-color: green"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label green">45%</span></td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>Người dùng lâu năm</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 80%; background-color: blue"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label blue">80%</span></td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Người dùng ngừng hoạt động</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 20%; background-color: red"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label red">20%</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Bảng Room -->
+            <div class="table-container">
+              <h2>Room</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Nhiệm vụ</th>
+                    <th>Tiến bộ</th>
+                    <th>Nhãn</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Phòng trống</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 30%; background-color: orange"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label orange">30%</span></td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Phòng đang sử dụng</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 80%; background-color: green"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label green">80%</span></td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Phòng bị hủy đặt</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 35%; background-color: blue"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label blue">35%</span></td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Phòng ngưng hoạt động</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 10%; background-color: red"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label red">10%</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Bảng Homestay -->
+            <div class="table-container">
+              <h2>Homestay</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Nhiệm vụ</th>
+                    <th>Tiến bộ</th>
+                    <th>Nhãn</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Homestay nổi tiếng</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 60%; background-color: orange"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label orange">60%</span></td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Homestay phổ biến</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 85%; background-color: green"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label green">85%</span></td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Homestay đánh giá trung bình</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 30%; background-color: blue"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label blue">30%</span></td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Homestay ngưng hoạt động</td>
+                    <td>
+                      <div class="progress-bar">
+                        <div
+                          class="progress"
+                          style="width: 15%; background-color: red"
+                        ></div>
+                      </div>
+                    </td>
+                    <td><span class="label red">15%</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </body>
+      </div>
+
+      <div class="footer">
+        <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+        <p>Version 3.2.0-rc</p>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Predefined admin accounts
+      const adminAccounts = [
+        { username: "admin1", password: "admin1" },
+        { username: "admin2", password: "admin2" },
+        { username: "admin3", password: "admin3" },
+      ];
+
+      // Login function
+      function validateLogin(event) {
+        event.preventDefault(); // Prevents form from submitting
+
+        const usernameInput = document.querySelector(
+          'input[name="username"]'
+        ).value;
+        const passwordInput = document.querySelector(
+          'input[name="password"]'
+        ).value;
+
+        // Check if entered credentials match any of the predefined accounts
+        const account = adminAccounts.find(
+          (acc) =>
+            acc.username === usernameInput && acc.password === passwordInput
+        );
+
+        if (account) {
+          alert("Login successful! Redirecting to Admin page...");
+          window.location.href = "admin.html"; // Redirect to admin page
+        } else {
+          alert("Invalid username or password. Please try again.");
+        }
+      }
+    </script>
+    <script>
+      function logout() {
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = "dangnhap_ad.html";
+      }
+    </script>
+  </body>
+</html>

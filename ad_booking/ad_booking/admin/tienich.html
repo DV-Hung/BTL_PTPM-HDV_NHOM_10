@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin GoatBooking</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        overflow: hidden; /* Loại bỏ thanh cuộn của toàn bộ trang */
+        max-height: 100%;
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        color: #fff;
+        position: fixed;
+        width: 250px;
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        transition: width 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .sidebar.collapsed {
+        width: 0;
+        overflow: hidden;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .sidebar a,
+      .sidebar h2 {
+        color: #fff;
+        text-decoration: none;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+      }
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 20px;
+        display: none;
+      }
+      .sidebar .submenu .nav-link {
+        font-size: 14px;
+        padding: 5px 20px;
+        color: #adb5bd;
+      }
+      .sidebar .submenu .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar .badge-info {
+        background-color: #17a2b8;
+      }
+      .sidebar .badge-danger {
+        background-color: #dc3545;
+      }
+      .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        height: 700px;
+      }
+      .content.collapsed {
+        margin-left: 0;
+      }
+      .content::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .content::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+      }
+    </style>
+    <style>
+      body1 {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+
+      .widget-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      .widget-container {
+        margin-bottom: 30px;
+      }
+
+      .widget {
+        border-radius: 10px;
+        padding: 15px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .widget .icon {
+        font-size: 2rem;
+        padding: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .bg-booking {
+        background-color: #0071c2;
+      }
+
+      .bg-likes {
+        background-color: #ff5a5f;
+      }
+
+      .bg-reviews {
+        background-color: #ff9800;
+      }
+
+      .bg-uploads {
+        background-color: #4caf50;
+      }
+
+      .bg-events {
+        background-color: #f44336;
+      }
+
+      .widget-content h4 {
+        font-size: 1.25rem;
+        margin-bottom: 5px;
+      }
+
+      .widget-content p {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .widget-content small {
+        display: block;
+        font-size: 0.85rem;
+      }
+
+      .shadow-custom {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .gradient-bg {
+        background: linear-gradient(45deg, #0071c2, #005b9f);
+      }
+    </style>
+    <style>
+      body2 {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+
+      .widget-box {
+        margin-top: -10%;
+        padding: 15px;
+        border-radius: 10px;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        cursor: pointer;
+      }
+
+      .widget-box .icon {
+        font-size: 2.5rem;
+        opacity: 0.8;
+      }
+
+      .bg-primary-custom {
+        background-color: #0071c2;
+      }
+
+      .bg-green {
+        background-color: #4caf50;
+      }
+
+      .bg-yellow {
+        background-color: #ff9800;
+      }
+
+      .bg-red {
+        background-color: #f44336;
+      }
+
+      .social-card {
+        border-radius: 10px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .social-card .card-header {
+        color: #fff;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: bold;
+      }
+
+      .social-card .card-body {
+        padding: 15px;
+      }
+
+      .bg-social-yellow {
+        background-color: #ff9800;
+      }
+
+      .bg-social-blue {
+        background-color: #0071c2;
+      }
+
+      .bg-social-red {
+        background-color: #f44336;
+      }
+
+      .stat {
+        text-align: center;
+        font-size: 1rem;
+        font-weight: bold;
+      }
+
+      .stat p {
+        margin: 0;
+      }
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        margin-right: 10px;
+      }
+
+      .card-user {
+        display: flex;
+        align-items: center;
+      }
+
+      .card-user img {
+        border-radius: 50%;
+      }
+    </style>
+    <style>
+      body3 {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+
+      .image-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+      }
+
+      .image-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .image-card:hover img {
+        transform: scale(1.1);
+      }
+
+      .image-card-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.7),
+          rgba(0, 0, 0, 0)
+        );
+        color: white;
+      }
+
+      .image-card-content h5 {
+        font-weight: bold;
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .image-card-content p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+      }
+
+      .image-card-content small {
+        display: block;
+        margin-top: 5px;
+        font-size: 0.8rem;
+        color: #d1d1d1;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle submenu display
+        const menuItems = document.querySelectorAll(".nav-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const submenu = this.querySelector(".submenu");
+            if (submenu) {
+              submenu.style.display =
+                submenu.style.display === "none" || submenu.style.display === ""
+                  ? "block"
+                  : "none";
+            }
+          });
+        });
+
+        // Toggle sidebar visibility
+        const toggleButton = document.getElementById("sidebarToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("collapsed");
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2 class="text-center mb-4" style="font-size: 40px">
+        Admin <br />GoatBooking
+      </h2>
+      <img
+        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+        alt="Profile"
+        class="rounded-circle mx-auto d-block mb-4"
+        width="100"
+      />
+      <p class="text-center"></p>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tachometer-alt"></i> Trang chủ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="homestay.html">◯ Homestay</a></li>
+            <li><a class="nav-link" href="room.html">◯ Room</a></li>
+            <li><a class="nav-link" href="user.html">◯ User</a></li>
+            <li>
+              <a class="nav-link" href="service.html">◯ Service</a>
+            </li>
+            <li><a class="nav-link" href="review.html">◯ Review</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-th"></i> Tiện ích
+            <span class="badge badge-danger">New</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-bar"></i> Thống kê
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="thongke_3.html"
+                >◯ User-Homestay-Rooms</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="thongke_2.html">◯ Review - Service</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-pie"></i> Biểu đồ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="bieudotron.html">◯ Biểu đồ tròn</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudoduong.html">◯ Biểu đồ đường</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudocot.html">◯ Biểu đồ cột</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudovung.html">◯ Biểu đồ vùng</a>
+            </li>
+          </ul>
+        </li>
+        <!-- Xem thêm -->
+        <li class="nav-item">
+          <span class="nav-link">Xem thêm</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="lich.html"
+            ><i class="fas fa-calendar-alt"></i> Lịch
+            <span class="badge badge-info">2</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="bosuutap.html"
+            ><i class="fas fa-image"></i>Bộ sưu tập<span
+              class="badge badge-info"
+              >99+</span
+            ></a
+          >
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tools"></i>Hỗ trợ<i
+              class="fas fa-chevron-down"
+            ></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="chat.html">◯ Chat</a></li>
+            <li><a class="nav-link" href="email.html">◯ Mailbox</a></li>
+            <li><a class="nav-link" href="faq.html">◯ FAQ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="datlai.html" onclick="openResetModal()">
+            <i class="fas fa-sync-alt"></i>Đặt lại<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fa fa-user-circle"></i> Tài khoản
+            <i class="fas fa-chevron-down-o"></i
+          ></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>Đăng xuất<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <button
+          id="sidebarToggle"
+          class="btn btn-outline-secondary mr-2"
+          title="Toggle Sidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">Contact</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-comments"></i
+              ><span class="badge badge-danger">3</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="badge badge-warning">15</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-4">
+        <body1>
+          <div class="container py-5" style="margin-top: -7%">
+            <h1 class="mb-4">Widgets - Booking.com</h1>
+
+            <!-- Basic Widgets -->
+            <div class="widget-container row">
+              <div class="col-md-3">
+                <div class="widget bg-booking shadow-custom">
+                  <div class="widget-content">
+                    <h4>Đặt phòng</h4>
+                    <p id="bookingCount"></p>
+                    <small>Tăng 20% trong 30 ngày</small>
+                  </div>
+                  <i class="fas fa-calendar-check icon"></i>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="widget bg-likes shadow-custom">
+                  <div class="widget-content">
+                    <h4>Người dùng</h4>
+                    <p id="userCount"></p>
+                    <small>Tăng 50% trong 30 ngày</small>
+                  </div>
+                  <i class="fas fa-user icon"></i>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="widget bg-reviews shadow-custom">
+                  <div class="widget-content">
+                    <h4>Đánh giá</h4>
+                    <p id="commentCount"></p>
+                    <small>+20 đánh giá mới</small>
+                  </div>
+                  <i class="fas fa-star icon"></i>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="widget bg-uploads shadow-custom">
+                  <div class="widget-content">
+                    <h4>Uploads</h4>
+                    <p id="uploadCount"></p>
+                    <small>Cập nhật hôm nay</small>
+                  </div>
+                  <i class="fas fa-upload icon"></i>
+                </div>
+              </div>
+            </div>
+            <!-- Gradient Widgets -->
+            <h2
+              class="widget-header"
+              style="font-size: 50px; font-weight: normal"
+            >
+              Hộp thông tin với Gradient
+            </h2>
+            <div class="widget-container row">
+              <div class="col-md-3">
+                <div class="widget gradient-bg shadow-custom">
+                  <div class="widget-content">
+                    <h4>Sự kiện</h4>
+                    <p>41,410</p>
+                    <small>Tăng 70% trong 30 ngày</small>
+                  </div>
+                  <i class="fas fa-calendar-alt icon"></i>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="widget gradient-bg shadow-custom">
+                  <div class="widget-content">
+                    <h4>Lượt thích</h4>
+                    <p>41,410</p>
+                    <small>Tăng 70% trong 30 ngày</small>
+                  </div>
+                  <i class="fas fa-heart icon"></i>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="widget gradient-bg shadow-custom">
+                  <div class="widget-content">
+                    <h4>Bình luận</h4>
+                    <p>41,410</p>
+                    <small>Tăng 70% trong 30 ngày</small>
+                  </div>
+                  <i class="fas fa-comments icon"></i>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="widget gradient-bg shadow-custom">
+                  <div class="widget-content">
+                    <h4>Liên hệ</h4>
+                    <p>41,410</p>
+                    <small>Tăng 70% trong 30 ngày</small>
+                  </div>
+                  <i class="fas fa-comment-dots icon"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        </body1>
+        <body2>
+          <div class="container py-5" style="margin-top: -11%">
+            <!-- Hộp nhỏ -->
+            <h2 class="mb-4">Hộp nhỏ</h2>
+            <div class="row">
+              <div class="col-md-3">
+                <div class="widget-box bg-primary-custom shadow">
+                  <div>
+                    <h4>150</h4>
+                    <p>Đơn hàng cập nhập</p>
+                  </div>
+                  <i class="fas fa-shopping-cart icon"></i>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="widget-box bg-green shadow">
+                  <div>
+                    <h4>53%</h4>
+                    <p>Thống kê thu nhập</p>
+                  </div>
+                  <i class="fas fa-chart-bar icon"></i>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="widget-box bg-yellow shadow">
+                  <div>
+                    <h4>44</h4>
+                    <p>Người dùng mới</p>
+                  </div>
+                  <i class="fas fa-user-plus icon"></i>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="widget-box bg-red shadow">
+                  <div>
+                    <h4>65</h4>
+                    <p>Biểu đồ các mục</p>
+                  </div>
+                  <i class="fas fa-chart-pie icon"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tiện ích xã hội -->
+            <h2 class="mt-5 mb-4">Tiện ích xã hội</h2>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="social-card">
+                  <div class="card-header bg-social-yellow">
+                    Nadia Carmichael
+                  </div>
+                  <div class="card-body">
+                    <div class="card-user">
+                      <img
+                        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+                        alt="User Avatar"
+                        class="user-avatar"
+                      />
+                      <div>
+                        <h6>Nhà phát triển chính</h6>
+                      </div>
+                    </div>
+                    <div class="mt-3">
+                      <div
+                        class="d-flex justify-content-between"
+                        style="margin-left: -8%; font-size: 0.5px"
+                      >
+                        <span class="badge bg-primary">Dự án: 31</span>
+                        <span class="badge bg-success">Nhiệm vụ: 5</span>
+                        <span class="badge bg-info">Hoàn thành: 12</span>
+                        <span class="badge bg-danger">Theo: 842</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="social-card">
+                  <div class="card-header bg-social-blue">Alexander Pierce</div>
+                  <div class="card-body text-center">
+                    <img
+                      src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+                      alt="User Avatar"
+                      class="rounded-circle mb-3"
+                      style="
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 50%;
+                        border: 2px solid #fff;
+                        margin-right: 10px;
+                      "
+                    />
+                    <h6>Người sáng lập & Giám đốc điều hành</h6>
+                    <div class="row mt-3">
+                      <div class="col stat">
+                        <p>3,200</p>
+                        <small>Bán hàng</small>
+                      </div>
+                      <div class="col stat">
+                        <p>13,000</p>
+                        <small>Theo dõi</small>
+                      </div>
+                      <div class="col stat">
+                        <p>35</p>
+                        <small>Sản phẩm</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="social-card">
+                  <div class="card-header bg-social-red">Elizabeth Pierce</div>
+                  <div class="card-body text-center">
+                    <img
+                      src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+                      alt="User Avatar"
+                      class="rounded-circle mb-3"
+                      style="
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 50%;
+                        border: 2px solid #fff;
+                        margin-right: 10px;
+                      "
+                    />
+                    <h6>Nhà thiết kế web</h6>
+                    <div class="row mt-3">
+                      <div class="col stat">
+                        <p>3,200</p>
+                        <small>Bán hàng</small>
+                      </div>
+                      <div class="col stat">
+                        <p>13,000</p>
+                        <small>Theo dõi</small>
+                      </div>
+                      <div class="col stat">
+                        <p>35</p>
+                        <small>Sản phẩm</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        </body2>
+        <body3>
+          <div class="container" style="margin-top: -5%">
+            <h2 class="mt-4 mb-3">Khám phá ưu đãi mới</h2>
+            <div class="row">
+              <!-- Card 1 -->
+              <div class="col-md-4">
+                <div class="card">
+                  <img
+                    src="https://www.vietnam-roads.fr/wp-content/uploads/2017/07/Hoi-An.jpg"
+                    class="card-img-top"
+                    alt="Phố cổ lãng mạn"
+                  />
+                  <div class="card-body text-white bg-dark bg-opacity-50">
+                    <h5 class="card-title">Trải nghiệm phố cổ</h5>
+                    <p class="card-text">
+                      Khám phá những khách sạn đẹp nhất tại phố cổ, nơi lưu giữ
+                      lịch sử và sự lãng mạn.
+                    </p>
+                    <p class="card-text">
+                      <small>Cập nhật lần cuối: 2 phút trước</small>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div class="col-md-4">
+                <div class="card">
+                  <img
+                    src="https://th.bing.com/th/id/R.2376a663d986aa26d459b237a1e24661?rik=M8gplcg4mMs%2fAg&pid=ImgRaw&r=0"
+                    class="card-img-top"
+                    style="height: 220px"
+                    alt="Phòng khách sạn ấm cúng"
+                  />
+                  <div class="card-body text-white bg-dark bg-opacity-50">
+                    <h5 class="card-title">Không gian thư giãn</h5>
+                    <p class="card-text">
+                      Tận hưởng sự thoải mái từ những căn phòng đạt chuẩn 5 sao
+                      với giá ưu đãi.
+                    </p>
+                    <p class="card-text">
+                      <small>Cập nhật lần cuối: 15 giờ trước</small>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 3 -->
+              <div class="col-md-4">
+                <div class="card">
+                  <img
+                    src="https://th.bing.com/th/id/OIP.UEQrtEkfrly6ONuJAYTUAwHaEh?rs=1&pid=ImgDetMain"
+                    class="card-img-top"
+                    style="height: 220px"
+                    alt="Hành trình khám phá"
+                  />
+                  <div class="card-body text-white bg-dark bg-opacity-50">
+                    <h5 class="card-title">Hành trình khám phá</h5>
+                    <p class="card-text">
+                      Khởi động kỳ nghỉ mơ ước với những điểm đến đáng nhớ trên
+                      toàn thế giới.
+                    </p>
+                    <p class="card-text">
+                      <small>Cập nhật lần cuối: 3 ngày trước</small>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </body3>
+      </div>
+
+      <div class="footer">
+        <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+        <p>Version 3.2.0-rc</p>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Predefined admin accounts
+      const adminAccounts = [
+        { username: "admin1", password: "admin1" },
+        { username: "admin2", password: "admin2" },
+        { username: "admin3", password: "admin3" },
+      ];
+
+      // Login function
+      function validateLogin(event) {
+        event.preventDefault(); // Prevents form from submitting
+
+        const usernameInput = document.querySelector(
+          'input[name="username"]'
+        ).value;
+        const passwordInput = document.querySelector(
+          'input[name="password"]'
+        ).value;
+
+        // Check if entered credentials match any of the predefined accounts
+        const account = adminAccounts.find(
+          (acc) =>
+            acc.username === usernameInput && acc.password === passwordInput
+        );
+
+        if (account) {
+          alert("Login successful! Redirecting to Admin page...");
+          window.location.href = "admin.html"; // Redirect to admin page
+        } else {
+          alert("Invalid username or password. Please try again.");
+        }
+      }
+    </script>
+    <script>
+      const apiUrl = "https://localhost:7246/api/Bookings";
+      const apiUrl_1="https://localhost:7246/api/Users";
+      const apiUrl_2="https://localhost:7246/api/Reviews";
+
+       async function fetchBookingsCount() {
+          try {
+              // Gọi API để lấy số lượng booking
+              const response = await fetch(apiUrl, {
+                          method: 'GET',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              // 'Authorization': 'Bearer YOUR_TOKEN_HERE' // Thêm nếu API yêu cầu xác thực
+                          },
+                      });
+              // Kiểm tra nếu API trả về thành công
+              if (!response.ok) {
+                  throw new Error(`Error: ${response.statusText}`);
+              }
+              
+              // Chuyển dữ liệu API trả về thành JSON
+              const data = await response.json();
+
+              
+              // Hiển thị số lượng booking lên giao diện
+              document.getElementById('bookingCount').innerText = `${data.length} phòng`;
+          } catch (error) {
+              console.error('Error fetching bookings count:', error);
+              document.getElementById('bookingCount').innerText = 'Unable to load booking count.';
+          }
+      }
+      
+
+      async function fetchUsersCount() {
+          try {
+              // Gọi API để lấy số lượng booking
+              const response = await fetch(apiUrl_1, {
+                          method: 'GET',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              // 'Authorization': 'Bearer YOUR_TOKEN_HERE' // Thêm nếu API yêu cầu xác thực
+                          },
+                      });
+              // Kiểm tra nếu API trả về thành công
+              if (!response.ok) {
+                  throw new Error(`Error: ${response.statusText}`);
+              }
+              
+              // Chuyển dữ liệu API trả về thành JSON
+              const data = await response.json();
+
+              
+              // Hiển thị số lượng booking lên giao diện
+              document.getElementById('userCount').innerText = `${data.length} người`;
+          } catch (error) {
+              console.error('Error fetching bookings count:', error);
+              document.getElementById('userCount').innerText = 'Unable to load booking count.';
+          }
+      }
+      
+      async function fetchUsersCount() {
+          try {
+              // Gọi API để lấy số lượng booking
+              const response = await fetch(apiUrl_1, {
+                          method: 'GET',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              // 'Authorization': 'Bearer YOUR_TOKEN_HERE' // Thêm nếu API yêu cầu xác thực
+                          },
+                      });
+              // Kiểm tra nếu API trả về thành công
+              if (!response.ok) {
+                  throw new Error(`Error: ${response.statusText}`);
+              }
+              
+              // Chuyển dữ liệu API trả về thành JSON
+              const data = await response.json();
+
+              
+              // Hiển thị số lượng booking lên giao diện
+              document.getElementById('userCount').innerText = `${data.length} người`;
+          } catch (error) {
+              console.error('Error fetching bookings count:', error);
+              document.getElementById('userCount').innerText = 'Unable to load booking count.';
+          }
+      }
+
+      async function fetchReviewsCount() {
+          try {
+              // Gọi API để lấy số lượng booking
+              const response = await fetch(apiUrl_2, {
+                          method: 'GET',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              // 'Authorization': 'Bearer YOUR_TOKEN_HERE' // Thêm nếu API yêu cầu xác thực
+                          },
+                      });
+              // Kiểm tra nếu API trả về thành công
+              if (!response.ok) {
+                  throw new Error(`Error: ${response.statusText}`);
+              }
+              
+              // Chuyển dữ liệu API trả về thành JSON
+              const data = await response.json();
+
+              
+              // Hiển thị số lượng booking lên giao diện
+              document.getElementById('commentCount').innerText = `${data.length} đánh giá`;
+          } catch (error) {
+              console.error('Error fetching bookings count:', error);
+              document.getElementById('commentCount').innerText = 'Unable to load booking count.';
+          }
+      }
+
+
+      async function fetchBookingsFromDate(startDateString) {
+    try {
+        // Gửi yêu cầu tới API
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+
+        // Chuyển ngày bắt đầu (string) thành timestamp
+        const startDate = new Date(startDateString).getTime();
+
+        // Lấy thời gian hiện tại
+        const now = Date.now();
+
+        // Lọc các booking từ ngày bắt đầu đến hiện tại
+        const recentBookings = data.filter(booking => {
+            const bookingDate = new Date(booking.createdAt * 1000); // Chuyển timestamp sang milliseconds
+            return bookingDate.getTime() >= startDate && bookingDate.getTime() <= now;
+        });
+        
+        // Cập nhật UI với số lượng booking
+        document.getElementById('uploadCount').innerText = `${recentBookings.length} booking`;
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        document.getElementById('uploadCount').innerText = 'Không thể tải dữ liệu.';
+    }
+  }
+
+// Gọi hàm với ngày bắt đầu bất kỳ (ví dụ: "2024-11-12")
+document.addEventListener('DOMContentLoaded', () => {
+    fetchBookingsFromDate('1970-8-23' );
+});
+
+// Gọi hàm fetchBookingsCount khi trang được load
+document.addEventListener('DOMContentLoaded', fetchBookingsCount);
+document.addEventListener('DOMContentLoaded', fetchUsersCount);
+document.addEventListener('DOMContentLoaded', fetchReviewsCount);
+
+
+      function logout() {
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = "dangnhap_ad.html";
+      }
+    </script>
+  </body>
+</html>

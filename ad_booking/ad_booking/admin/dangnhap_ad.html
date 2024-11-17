@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .login-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+      }
+
+      .login-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .login-container input {
+        width: 93%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+      }
+
+      .login-container button {
+        width: 100%;
+        padding: 10px;
+        background-color: #0071c2;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .login-container button:hover {
+        background-color: #005fa3;
+      }
+
+      .login-container p {
+        text-align: center;
+        margin-top: 15px;
+      }
+
+      .login-container a {
+        color: #0071c2;
+        text-decoration: none;
+      }
+
+      .login-container a:hover {
+        text-decoration: underline;
+      }
+      /* Video background styling */
+      #video-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Video Background -->
+    <video id="video-background" autoplay loop muted>
+      <source src="INTRO_VIDEO.mp4" type="video/mp4" />
+      Trình duyệt của bạn không hỗ trợ video.
+    </video>
+    <div class="login-container">
+      <h2>Đăng nhập</h2>
+      <form onsubmit="redirectToAdminPage(event)" autocomplete="off">
+        <input
+          type="text"
+          name="username"
+          placeholder="Tài khoản"
+          autocomplete="off"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Mật khẩu"
+          autocomplete="off"
+          required
+        />
+        <button type="submit" style="margin-top: 20px">Đăng nhập</button>
+      </form>
+
+      <script>
+        // Danh sách tài khoản mặc định (ban đầu)
+        const adminAccounts = [
+          { username: "admin1", password: "admin1" },
+          { username: "admin2", password: "admin2" },
+          { username: "admin3", password: "admin3" },
+        ];
+
+        function redirectToAdminPage(event) {
+          event.preventDefault(); // Ngăn form nộp mặc định
+
+          const username = document.querySelector(
+            'input[name="username"]'
+          ).value;
+          const password = document.querySelector(
+            'input[name="password"]'
+          ).value;
+
+          // Duyệt qua các tài khoản gốc để tìm tài khoản khớp với thông tin trong localStorage
+          const accounts = ["admin1", "admin2", "admin3"];
+          let redirectPage = null;
+
+          for (const account of accounts) {
+            const storedUsername = localStorage.getItem(`${account}_username`);
+            const storedPassword = localStorage.getItem(`${account}_password`);
+            const storedPage = localStorage.getItem(`${account}_page`);
+
+            // Kiểm tra nếu tài khoản và mật khẩu khớp
+            if (storedUsername === username && storedPassword === password) {
+              redirectPage = storedPage; // Lấy trang đích tương ứng
+              break;
+            }
+          }
+
+          if (redirectPage) {
+            alert("Đăng nhập thành công! Chuyển đến trang tương ứng...");
+            window.location.href = redirectPage; // Chuyển hướng đến trang đích
+          } else {
+            alert("Tên đăng nhập hoặc mật khẩu không đúng.");
+          }
+        }
+      </script>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin GoatBooking</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        overflow: hidden; /* Loại bỏ thanh cuộn của toàn bộ trang */
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        color: #fff;
+        position: fixed;
+        width: 250px;
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        transition: width 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .sidebar.collapsed {
+        width: 0;
+        overflow: hidden;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .sidebar a,
+      .sidebar h2 {
+        color: #fff;
+        text-decoration: none;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+      }
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 20px;
+        display: none;
+      }
+      .sidebar .submenu .nav-link {
+        font-size: 14px;
+        padding: 5px 20px;
+        color: #adb5bd;
+      }
+      .sidebar .submenu .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar .badge-info {
+        background-color: #17a2b8;
+      }
+      .sidebar .badge-danger {
+        background-color: #dc3545;
+      }
+      .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        height: 700px;
+      }
+      .content.collapsed {
+        margin-left: 0;
+      }
+      .content::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .content::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+      }
+    </style>
+    <style>
+      body2 {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .faq-section {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .faq-section h2 {
+        font-size: 24px;
+        color: #333333;
+        margin-bottom: 20px;
+      }
+
+      .faq-item {
+        margin-bottom: 15px;
+        position: relative;
+      }
+
+      .faq-question {
+        width: 100%;
+        padding: 15px;
+        background-color: #17a2b8;
+        color: #ffffff;
+        font-size: 18px;
+        border: none;
+        border-radius: 5px;
+        text-align: left;
+        cursor: pointer;
+        outline: none;
+        transition: background-color 0.3s;
+      }
+
+      .faq-question:hover {
+        background-color: #138496;
+      }
+
+      .faq-answer {
+        display: none;
+        padding: 15px;
+        font-size: 16px;
+        color: #333333;
+        background-color: #e9ecef;
+        border-radius: 5px;
+        margin-top: 5px;
+      }
+
+      .add-faq {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .add-faq input,
+      .add-faq textarea,
+      .add-faq button {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+      }
+
+      .add-faq button {
+        background-color: #28a745;
+        color: #ffffff;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .add-faq button:hover {
+        background-color: #218838;
+      }
+
+      .delete-button {
+        position: absolute;
+        right: 10px;
+        top: 15px;
+        background-color: #dc3545;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+      }
+
+      .delete-button:hover {
+        background-color: #c82333;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle submenu display
+        const menuItems = document.querySelectorAll(".nav-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const submenu = this.querySelector(".submenu");
+            if (submenu) {
+              submenu.style.display =
+                submenu.style.display === "none" || submenu.style.display === ""
+                  ? "block"
+                  : "none";
+            }
+          });
+        });
+
+        // Toggle sidebar visibility
+        const toggleButton = document.getElementById("sidebarToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("collapsed");
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2 class="text-center mb-4" style="font-size: 40px">
+        Admin <br />GoatBooking
+      </h2>
+      <img
+        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+        alt="Profile"
+        class="rounded-circle mx-auto d-block mb-4"
+        width="100"
+      />
+      <p class="text-center"></p>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tachometer-alt"></i> Trang chủ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="homestay.html">◯ Homestay</a></li>
+            <li><a class="nav-link" href="room.html">◯ Room</a></li>
+            <li><a class="nav-link" href="user.html">◯ User</a></li>
+            <li>
+              <a class="nav-link" href="service.html">◯ Service</a>
+            </li>
+            <li><a class="nav-link" href="review.html">◯ Review</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-th"></i> Tiện ích
+            <span class="badge badge-danger">New</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-bar"></i> Thống kê
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="thongke_3.html"
+                >◯ User-Homestay-Rooms</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="thongke_2.html">◯ Review - Service</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-pie"></i> Biểu đồ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="bieudotron.html">◯ Biểu đồ tròn</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudoduong.html">◯ Biểu đồ đường</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudocot.html">◯ Biểu đồ cột</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudovung.html">◯ Biểu đồ vùng</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Xem thêm -->
+        <li class="nav-item">
+          <span class="nav-link">Xem thêm</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="lich.html"
+            ><i class="fas fa-calendar-alt"></i> Lịch
+            <span class="badge badge-info">2</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="bosuutap.html"
+            ><i class="fas fa-image"></i>Bộ sưu tập<span
+              class="badge badge-info"
+              >99+</span
+            ></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tools"></i>Hỗ trợ<i
+              class="fas fa-chevron-down"
+            ></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="chat.html">◯ Chat</a></li>
+            <li><a class="nav-link" href="email.html">◯ Mailbox</a></li>
+            <li><a class="nav-link" href="faq.html">◯ FAQ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="datlai.html" onclick="openResetModal()">
+            <i class="fas fa-sync-alt"></i>Đặt lại<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fa fa-user-circle"></i> Tài khoản
+            <i class="fas fa-chevron-down-o"></i
+          ></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>Đăng xuất<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <button
+          id="sidebarToggle"
+          class="btn btn-outline-secondary mr-2"
+          title="Toggle Sidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">Contact</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-comments"></i
+              ><span class="badge badge-danger">3</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="badge badge-warning">15</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-4">
+        <body2>
+          <div class="faq-section" style="margin-top: -5%">
+            <h2>FAQ - Booking Homestay</h2>
+
+            <!-- FAQ items -->
+            <div class="faq-item">
+              <button class="faq-question" onclick="toggleAnswer(this)">
+                Làm thế nào để hủy đặt phòng?
+              </button>
+              <button
+                class="delete-button"
+                style="background-color: #17a2b8"
+              ></button>
+              <div class="faq-answer">
+                <p>
+                  Bạn có thể hủy đặt phòng bằng cách truy cập vào trang Đặt
+                  Phòng của mình, chọn đặt phòng muốn hủy và nhấp vào nút "Hủy".
+                  Lưu ý rằng chính sách hủy có thể khác nhau tùy vào từng
+                  homestay.
+                </p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" onclick="toggleAnswer(this)">
+                Khi nào tôi sẽ được hoàn tiền sau khi hủy đặt phòng?
+              </button>
+              <button
+                class="delete-button"
+                style="background-color: #17a2b8"
+              ></button>
+              <div class="faq-answer">
+                <p>
+                  Thời gian hoàn tiền sẽ phụ thuộc vào phương thức thanh toán và
+                  chính sách hoàn tiền của homestay. Thông thường, bạn sẽ nhận
+                  được tiền hoàn lại trong vòng 5-7 ngày làm việc.
+                </p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" onclick="toggleAnswer(this)">
+                Tôi có thể thay đổi ngày lưu trú sau khi đã đặt phòng không?
+              </button>
+              <button
+                class="delete-button"
+                style="background-color: #17a2b8"
+              ></button>
+              <div class="faq-answer">
+                <p>
+                  Có, bạn có thể thay đổi ngày lưu trú tùy thuộc vào tình trạng
+                  phòng trống của homestay. Hãy liên hệ với chúng tôi hoặc
+                  homestay để kiểm tra khả năng thay đổi ngày lưu trú.
+                </p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" onclick="toggleAnswer(this)">
+                Phương thức thanh toán nào được hỗ trợ?
+              </button>
+              <button
+                class="delete-button"
+                style="background-color: #17a2b8"
+              ></button>
+              <div class="faq-answer">
+                <p>
+                  Chúng tôi hỗ trợ nhiều phương thức thanh toán bao gồm thẻ tín
+                  dụng, thẻ ghi nợ và các ví điện tử phổ biến như Momo, ZaloPay.
+                </p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" onclick="toggleAnswer(this)">
+                Làm thế nào để nhận hóa đơn thanh toán?
+              </button>
+              <button
+                class="delete-button"
+                style="background-color: #17a2b8"
+              ></button>
+              <div class="faq-answer">
+                <p>
+                  Sau khi hoàn tất thanh toán, bạn có thể tải hóa đơn trực tiếp
+                  từ email xác nhận hoặc từ trang quản lý đặt phòng của mình.
+                </p>
+              </div>
+            </div>
+
+            <!-- Section to add new FAQ -->
+            <div class="add-faq">
+              <input
+                type="text"
+                id="newQuestion"
+                placeholder="Nhập câu hỏi mới"
+                required
+              />
+              <textarea
+                id="newAnswer"
+                placeholder="Nhập câu trả lời cho câu hỏi mới"
+                rows="3"
+                required
+              ></textarea>
+              <button onclick="addFaq()">Thêm câu hỏi</button>
+            </div>
+          </div>
+
+          <script>
+            function toggleAnswer(button) {
+              const answer = button.nextElementSibling.nextElementSibling;
+              answer.style.display =
+                answer.style.display === "block" ? "none" : "block";
+            }
+
+            function addFaq() {
+              const questionText = document
+                .getElementById("newQuestion")
+                .value.trim();
+              const answerText = document
+                .getElementById("newAnswer")
+                .value.trim();
+
+              if (questionText === "" || answerText === "") {
+                alert("Vui lòng nhập cả câu hỏi và câu trả lời.");
+                return;
+              }
+
+              // Lưu dữ liệu vào localStorage
+              const faqs = JSON.parse(localStorage.getItem("faqs")) || [];
+              faqs.push({ question: questionText, answer: answerText });
+              localStorage.setItem("faqs", JSON.stringify(faqs));
+
+              // Thêm vào giao diện
+              renderFaqItem({ question: questionText, answer: answerText });
+
+              // Xóa nội dung nhập
+              document.getElementById("newQuestion").value = "";
+              document.getElementById("newAnswer").value = "";
+            }
+
+            function renderFaqItem(faq) {
+              const faqContainer = document.querySelector(".faq-section");
+              const faqItem = document.createElement("div");
+              faqItem.className = "faq-item";
+
+              const questionButton = document.createElement("button");
+              questionButton.className = "faq-question";
+              questionButton.textContent = faq.question;
+
+              const deleteButton = document.createElement("button");
+              deleteButton.className = "delete-button";
+              deleteButton.textContent = "Xóa";
+              deleteButton.onclick = function () {
+                deleteFaq(deleteButton);
+              };
+
+              const answerDiv = document.createElement("div");
+              answerDiv.className = "faq-answer";
+              answerDiv.innerHTML = `<p>${faq.answer}</p>`;
+
+              questionButton.onclick = function () {
+                answerDiv.style.display =
+                  answerDiv.style.display === "block" ? "none" : "block";
+              };
+
+              faqItem.appendChild(questionButton);
+              faqItem.appendChild(deleteButton);
+              faqItem.appendChild(answerDiv);
+              faqContainer.insertBefore(
+                faqItem,
+                document.querySelector(".add-faq")
+              );
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+              const faqs = JSON.parse(localStorage.getItem("faqs")) || [];
+              if (faqs.length > 0) {
+                faqs.forEach(renderFaqItem);
+              } else {
+                document.querySelector(".faq-section").innerHTML += "<p></p>";
+              }
+            });
+
+            // Xóa nội dung input
+            document.getElementById("newQuestion").value = "";
+            document.getElementById("newAnswer").value = "";
+
+            function deleteFaq(button) {
+              const faqItem = button.parentElement;
+              const questionText =
+                faqItem.querySelector(".faq-question").textContent;
+
+              // Xóa câu hỏi khỏi giao diện
+              faqItem.remove();
+
+              // Xóa câu hỏi khỏi localStorage
+              let faqs = JSON.parse(localStorage.getItem("faqs")) || [];
+              faqs = faqs.filter((faq) => faq.question !== questionText);
+              localStorage.setItem("faqs", JSON.stringify(faqs));
+            }
+          </script>
+        </body2>
+      </div>
+
+      <div class="footer">
+        <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+        <p>Version 3.2.0-rc</p>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      function logout() {
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = "dangnhap_ad.html";
+      }
+    </script>
+  </body>
+</html>

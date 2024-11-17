@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin GoatBooking</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      body1 {
+        font-family: Arial, sans-serif;
+        overflow: hidden; /* Loại bỏ thanh cuộn của toàn bộ trang */
+        max-height: 100%;
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        color: #fff;
+        position: fixed;
+        width: 250px;
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        transition: width 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .sidebar.collapsed {
+        width: 0;
+        overflow: hidden;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .sidebar a,
+      .sidebar h2 {
+        color: #fff;
+        text-decoration: none;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+      }
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 20px;
+        display: none;
+      }
+      .sidebar .submenu .nav-link {
+        font-size: 14px;
+        padding: 5px 20px;
+        color: #adb5bd;
+      }
+      .sidebar .submenu .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar .badge-info {
+        background-color: #17a2b8;
+      }
+      .sidebar .badge-danger {
+        background-color: #dc3545;
+      }
+      .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .content.collapsed {
+        margin-left: 0;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+        margin-left: 250px;
+      }
+    </style>
+    <style>
+      body2 {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f4c3; /* Light Lime Green */
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff; /* White */
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+      h2 {
+        padding: 10px 20px;
+        color: #ffffff; /* White */
+        font-size: 2em;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(
+          135deg,
+          #ff6f61,
+          #ff8e53
+        ); /* Coral to Peach */
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+        margin: 5px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.2s ease;
+      }
+      .button-add {
+        background-color: #4caf50; /* Green */
+        color: white;
+      }
+      .button-add:hover {
+        background-color: #388e3c; /* Darker Green */
+      }
+      .button-edit {
+        background-color: #2196f3; /* Blue */
+        color: white;
+      }
+      .button-edit:hover {
+        background-color: #1976d2; /* Darker Blue */
+      }
+      .button-delete {
+        background-color: #f44336; /* Red */
+        color: white;
+      }
+      .button-delete:hover {
+        background-color: #d32f2f; /* Darker Red */
+      }
+      .button-export {
+        background-color: #9c27b0; /* Purple */
+        color: white;
+      }
+      .button-export:hover {
+        background-color: #7b1fa2; /* Darker Purple */
+      }
+      label {
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 0.95em;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: center;
+      }
+      th {
+        background: linear-gradient(
+          135deg,
+          #ff6f61,
+          #ff8e53
+        ); /* Coral to Peach */
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      th:hover {
+        background: #ff5e3a; /* Darker Coral */
+        transition: background-color 0.3s ease;
+      }
+      .form-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 400px;
+        max-height: 700px; /* Thiết lập chiều cao tối đa */
+        padding: 20px;
+        background-color: white;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        overflow-y: auto; /* Thêm thanh cuộn dọc nếu nội dung vượt quá chiều cao */
+      }
+      #overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+      @media (max-width: 768px) {
+        h2 {
+          font-size: 1.5em;
+        }
+        table,
+        th,
+        td {
+          font-size: 0.85em;
+        }
+        .button {
+          padding: 6px 8px;
+          font-size: 0.85em;
+        }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle submenu display
+        const menuItems = document.querySelectorAll(".nav-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const submenu = this.querySelector(".submenu");
+            if (submenu) {
+              submenu.style.display =
+                submenu.style.display === "none" || submenu.style.display === ""
+                  ? "block"
+                  : "none";
+            }
+          });
+        });
+
+        // Toggle sidebar visibility
+        const toggleButton = document.getElementById("sidebarToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("collapsed");
+        });
+      });
+    </script>
+  </head>
+  <body1>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h3 class="text-center mb-4" style="font-size: 40px">
+        Admin <br />GoatBooking
+      </h3>
+      <img
+        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+        alt="Profile"
+        class="rounded-circle mx-auto d-block mb-4"
+        width="100"
+      />
+      <p class="text-center"></p>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tachometer-alt"></i> Trang chủ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="homestay.html">◯ Homestay</a></li>
+            <li><a class="nav-link" href="room.html">◯ Room</a></li>
+            <li><a class="nav-link" href="user.html">◯ User</a></li>
+            <li>
+              <a class="nav-link" href="service.html">◯ Service</a>
+            </li>
+            <li><a class="nav-link" href="review.html">◯ Review</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="tienich.html"
+            ><i class="fas fa-th"></i> Tiện ích
+            <span class="badge badge-danger">New</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-bar"></i> Thống kê
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="thongke_3.html"
+                >◯ User-Homestay-Rooms</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="thongke_2.html">◯ Review - Service</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-pie"></i> Biểu đồ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="bieudotron.html">◯ Biểu đồ tròn</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudoduong.html">◯ Biểu đồ đường</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudocot.html">◯ Biểu đồ cột</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudovung.html">◯ Biểu đồ vùng</a>
+            </li>
+          </ul>
+        </li>
+        <!-- Xem thêm -->
+        <li class="nav-item">
+          <span class="nav-link">Xem thêm</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="lich.html"
+            ><i class="fas fa-calendar-alt"></i> Lịch
+            <span class="badge badge-info">2</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="bosuutap.html"
+            ><i class="fas fa-image"></i>Bộ sưu tập<span
+              class="badge badge-info"
+              >99+</span
+            ></a
+          >
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tools"></i>Hỗ trợ<i
+              class="fas fa-chevron-down"
+            ></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="chat.html">◯ Chat</a></li>
+            <li><a class="nav-link" href="email.html">◯ Mailbox</a></li>
+            <li><a class="nav-link" href="faq.html">◯ FAQ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="datlai.html" onclick="openResetModal()">
+            <i class="fas fa-sync-alt"></i>Đặt lại<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fa fa-user-circle"></i> Tài khoản
+            <i class="fas fa-chevron-down-o"></i
+          ></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>Đăng xuất<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <button
+          id="sidebarToggle"
+          class="btn btn-outline-secondary mr-2"
+          title="Toggle Sidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">Contact</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-comments"></i
+              ><span class="badge badge-danger">3</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="badge badge-warning">15</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-4">
+        <body>
+            <h2>Quản Lý Phòng</h2>
+            <button class="button button-add" onclick="showAddForm()">
+              Thêm
+            </button>
+            <button class="button button-export" onclick="exportRoomData()">
+              Xuất dữ liệu
+            </button>
+            <p></p>
+            <label for="sortOptions">Sắp xếp theo:</label>
+            <select id="sortOptions" onchange="sortTable()">
+              <option value="id">ID</option>
+              <option value="name">Tên</option>
+              <option value="price">Giá</option>
+            </select>
+            <p></p>
+            <label for="searchInput">Tìm kiếm:</label>
+            <input
+              type="text"
+              id="searchInput"
+              onkeyup="searchRooms()"
+              placeholder="Nhập tên homestay..."
+            />
+
+            <table id="roomTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tên Phòng</th>
+                  <th>Loại</th>
+                  <th>Trạng thái</th>
+                  <th>Giá ($)</th>
+                  <th>Mã Homestay</th>
+                  <th>Mã Booking</th>
+                  <th>Ngày tạo</th>
+                  <th>Ngày cập nhật</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Dữ liệu sẽ được chèn vào đây bằng JavaScript -->
+              </tbody>
+            </table>
+
+            <!--add form-->
+            <div id="overlay"></div>
+            <div class="form-popup" id="addForm">
+              <h3>Thêm Phòng Mới</h3>
+              <label for="addId">ID</label>
+              <input type="text" id="addId" placeholder="Nhập ID" />
+
+              <label for="addName">Tên Phòng</label>
+              <input type="text" id="addName" placeholder="Nhập tên phòng" />
+
+              <label for="addType">Loại</label>
+              <input
+                type="text"
+                id="addType"
+                placeholder="1-đơn, 2-đôi, 3-ghép, 4-tập trung"
+              />
+
+              <label for="addStatus">Trạng thái</label>
+              <input
+                type="text"
+                id="addStatus"
+                placeholder="1-còn phòng, 0-hết phòng"
+              />
+
+              <label for="addPrice">Giá ($)</label>
+              <input type="text" id="addPrice" placeholder="Nhập giá" />
+
+              <label for="addHomestay">Mã homestay</label>
+              <input
+                type="text"
+                id="addHomestayid"
+                placeholder="Nhập mã homestay"
+              />
+
+              <label for="addBooking">Mã booking</label>
+              <input
+                type="text"
+                id="addBookingid"
+                placeholder="Nhập mã booking"
+              />
+
+              <button onclick="addRoom()">Thêm</button>
+              <button onclick="hideAddForm()">Đóng</button>
+            </div>
+            <!--edit form-->
+            <div id="overlay1"></div>
+            <div class="form-popup" id="editForm">
+              <h3>Chỉnh Sửa Phòng</h3>
+              <label for="editId">ID</label>
+              <input type="text" id="editId" readonly />
+              <label for="editName">Tên Phòng</label>
+              <input type="text" id="editName" />
+              <label for="editType">Loại</label>
+              <input type="text" id="editType" />
+              <label for="editPrice">Giá ($)</label>
+              <input type="text" id="editPrice" />
+              <label for="editStatus">Trạng Thái</label>
+              <input type="text" id="editStatus" />
+              <label for="editHomestayid">Mã Homestay</label>
+              <input type="text" id="editHomestayid" />
+              <label for="editUserid">Mã Booking</label>
+              <input type="text" id="editBookingId" />
+              <button onclick="saveEdit()">Lưu</button>
+              <button onclick="hideEditForm()">Đóng</button>
+            </div>
+          </div>
+          <script>
+            const apiUrl = "https://localhost:7246/api/Rooms";
+            //hiển thị dữ liệu
+            async function fetchRooms() {
+              try {
+                const response = await fetch(apiUrl);
+                if (!response.ok)
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+
+                const tableBody = document
+                  .getElementById("roomTable")
+                  .querySelector("tbody");
+                tableBody.innerHTML = "";
+                data.forEach((room) => {
+                  const createdAt = new Date(
+                    room.createdAt * 1000
+                  ).toLocaleString();
+                  const updatedAt = new Date(
+                    room.updatedAt * 1000
+                  ).toLocaleString();
+
+                  var loaiPhong = "";
+                  if (room.roomType == 1) {
+                    loaiPhong = "Phòng đơn";
+                  } else if (room.roomType == 2) {
+                    loaiPhong = "Phòng đôi";
+                  } else if (room.roomType == 3) {
+                    loaiPhong = "Phòng ghép 1 đôi - 1 đơn";
+                  } else {
+                    loaiPhong = "Phòng tập trung";
+                  }
+
+                  var trangthai = "";
+                  if (room.status == 1) {
+                    trangthai = "Còn phòng";
+                  } else {
+                    trangthai = "Hết phòng";
+                  }
+
+                  const row = document.createElement("tr");
+                  row.innerHTML = `
+                  <td>${room.roomId}</td>
+                  <td>${room.roomName}</td>
+                  <td>${loaiPhong}</td>
+                  <td>${trangthai}</td>
+                   <td>${room.price}</td>
+                  <td>${room.homestayId}</td>
+                  <td>${room.bookingId}</td>
+                  <td>${createdAt}</td>
+                  <td>${updatedAt}</td>
+                 
+                  <td>
+                    <button class="button-edit" onclick="showEditForm(${room.roomId})">Sửa</button>
+                    <button class="button-delete" onclick="deleteRooms(${room.roomId})">Xóa</button>
+                  </td>
+                `;
+                  tableBody.appendChild(row);
+                });
+              } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu từ API:", error);
+              }
+            }
+            // xuất dữ liệu
+            function exportRoomData() {
+              const table = document.getElementById("roomTable");
+              let data =
+                "ID,Tên,Loại,Trạng thái,Giá,Mã homestay,Mã booking, ngày tạo, ngày cập nhật\n";
+              for (let i = 1; i < table.rows.length; i++) {
+                const row = table.rows[i];
+                for (let j = 0; j < row.cells.length - 1; j++) {
+                  data +=
+                    row.cells[j].innerText +
+                    (j < row.cells.length - 2 ? "," : "");
+                }
+                data += "\n";
+              }
+              const blob = new Blob([data], { type: "text/txt" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "Room_data.txt";
+              a.click();
+              URL.revokeObjectURL(url);
+            }
+
+            // thêm và edit
+            //thêm
+            function showAddForm() {
+              document.getElementById("addForm").style.display = "block";
+              document.getElementById("overlay").style.display = "block";
+            }
+
+            function hideAddForm() {
+              document.getElementById("addForm").style.display = "none";
+              document.getElementById("overlay").style.display = "none";
+            }
+            //add
+            async function addRoom() {
+              const room = {
+                roomId: Number(document.getElementById("addId").value) || 0,
+                roomName: document.getElementById("addName").value.trim(),
+                roomType: parseInt(document.getElementById("addType").value),
+                price: parseFloat(document.getElementById("addPrice").value),
+                status: parseInt(document.getElementById("addStatus").value),
+                homestayId: parseInt(
+                  document.getElementById("addHomestayid").value
+                ), // Chỉ gửi ID
+                bookingId: parseInt(
+                  document.getElementById("addBookingid").value
+                ), // Chỉ gửi ID
+                createdAt: Math.floor(Date.now() / 1000),
+                updatedAt: Math.floor(Date.now() / 1000),
+              };
+
+              try {
+                const response = await fetch(
+                  "https://localhost:7246/api/Rooms",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(room),
+                  }
+                );
+
+                if (response.ok) {
+                  const data = await response.json();
+                  alert("Phòng đã được thêm thành công!");
+                  hideAddForm();
+                  fetchRooms();
+                } else {
+                  const errorData = await response.json();
+                  console.error("Chi tiết lỗi từ server:", errorData);
+                  alert(
+                    "Lỗi khi thêm phòng: " +
+                      (errorData.message || JSON.stringify(errorData))
+                  );
+                }
+              } catch (error) {
+                console.error("Lỗi kết nối:", error);
+                alert(
+                  "Đã có lỗi xảy ra khi kết nối đến server: " + error.message
+                );
+              }
+            }
+
+            // xóa
+            async function deleteRooms(id) {
+              if (confirm("Bạn có chắc chắn muốn xóa user này không?")) {
+                try {
+                  const response = await fetch(`${apiUrl}/${id}`, {
+                    method: "DELETE",
+                  });
+                  if (response.ok) {
+                    alert("Room đã được xóa thành công!");
+                    fetchRooms();
+                  } else {
+                    const errorData = await response.json();
+                    alert("Lỗi khi xóa User: " + errorData.message);
+                  }
+                } catch (error) {
+                  console.error("Lỗi khi xóa room:", error);
+                  alert("Không thể kết nối đến API.");
+                }
+              }
+            }
+
+            // sửa
+            function hideEditForm() {
+              document.getElementById("editForm").style.display = "none";
+              document.getElementById("overlay1").style.display = "none";
+            }
+            async function showEditForm(id) {
+              try {
+                const response = await fetch(`${apiUrl}/${id}`);
+                if (!response.ok)
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                const room = await response.json();
+
+                // Lưu lại thông tin phòng hiện tại để sử dụng khi lưu chỉnh sửa
+                window.currentRoomData = room; // Lưu thông tin phòng vào biến toàn cục
+
+                // Đặt giá trị vào các ô input trong form edit
+                document.getElementById("editId").value = room.roomId;
+                document.getElementById("editName").value = room.roomName;
+                document.getElementById("editType").value = room.roomType;
+                document.getElementById("editPrice").value = room.price;
+                document.getElementById("editStatus").value = room.status;
+                document.getElementById("editHomestayid").value =
+                  room.homestayId;
+                document.getElementById("editBookingId").value = room.status;
+
+                // Hiển thị form edit và overlay
+                document.getElementById("editForm").style.display = "block";
+                document.getElementById("overlay1").style.display = "block";
+              } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu phòng:", error);
+                alert("Không thể lấy dữ liệu phòng.");
+              }
+            }
+
+            //lưu
+            async function saveEdit(id) {
+              const room = {
+                roomId: parseInt(document.getElementById("editId").value),
+                roomName: document.getElementById("editName").value,
+                roomType: parseInt(document.getElementById("editType").value),
+                price: parseFloat(document.getElementById("editPrice").value),
+
+                status: parseInt(document.getElementById("editStatus").value),
+                homestayId: parseInt(
+                  document.getElementById("editHomestayid").value
+                ), // Chỉ gửi ID
+                bookingId: parseInt(
+                  document.getElementById("editBookingId").value
+                ), // Chỉ gửi ID   // Chỉ gửi ID
+
+                updatedAt: Math.floor(Date.now() / 1000),
+              };
+
+              try {
+                const response = await fetch(`${apiUrl}/${room.roomId}`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(room),
+                });
+
+                if (response.ok) {
+                  alert("Phòng đã được thêm thành công!");
+                  hideEditForm();
+                  fetchRooms(); // Refresh danh sách phòng
+                } else {
+                  const errorData = await response.json();
+                  alert("Lỗi khi thêm phòng: " + errorData.message);
+                }
+              } catch (error) {
+                console.error("Lỗi khi thêm phòng:", error);
+                alert("Không thể kết nối đến API.");
+              }
+            }
+            //search
+            async function searchRooms() {
+              const searchInput = document.getElementById("searchInput").value;
+              const response = await fetch(
+                `${apiUrl}/search?search=${encodeURIComponent(searchInput)}`
+              );
+
+              if (!response.ok) {
+                console.error("Lỗi khi tìm kiếm phòng:", response.statusText);
+                return;
+              }
+
+              const data = await response.json();
+              const tableBody = document
+                .getElementById("roomTable")
+                .querySelector("tbody");
+              tableBody.innerHTML = "";
+
+              if (data.length === 0) {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td colspan="10">Không tìm thấy phòng nào.</td>`;
+                tableBody.appendChild(row);
+                return;
+              }
+              data.forEach((room) => {
+                const createdAt = new Date(
+                  room.createdAt * 1000
+                ).toLocaleString();
+                const updatedAt = new Date(
+                  room.updatedAt * 1000
+                ).toLocaleString();
+
+                var loaiPhong = "";
+                if (room.roomType == 1) {
+                  loaiPhong = "Phòng đơn";
+                } else if (room.roomType == 2) {
+                  loaiPhong = "Phòng đôi";
+                } else if (room.roomType == 3) {
+                  loaiPhong = "Phòng ghép 1 đôi - 1 đơn";
+                } else {
+                  loaiPhong = "Phòng tập trung";
+                }
+
+                var trangthai = "";
+                if (room.status == 1) {
+                  trangthai = "Còn phòng";
+                } else {
+                  trangthai = "Hết phòng";
+                }
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                  <td>${room.roomId}</td>
+                  <td>${room.roomName}</td>
+                  <td>${loaiPhong}</td>
+                  <td>${trangthai}</td>
+                   <td>${room.price}</td>
+                  <td>${room.homestayId}</td>
+                  <td>${room.bookingId}</td>
+                  <td>${createdAt}</td>
+                  <td>${updatedAt}</td>
+                 
+                  <td>
+                    <button class="button-edit" onclick="showEditForm(${room.roomId})">Sửa</button>
+                    <button class="button-delete" onclick="deleteRooms(${room.roomId})">Xóa</button>
+                  </td>
+                `;
+                tableBody.appendChild(row);
+              });
+            }
+
+            function sortTable() {
+              const table = document.getElementById("roomTable");
+              const rows = Array.from(table.rows).slice(1);
+              const sortBy = document.getElementById("sortOptions").value;
+
+              rows.sort((a, b) => {
+                if (sortBy === "id") {
+                  // Sắp xếp theo ID (số)
+                  return a.cells[0].innerText - b.cells[0].innerText;
+                } else if (sortBy === "name") {
+                  // Sắp xếp theo tên (chuỗi)
+                  return a.cells[1].innerText.localeCompare(
+                    b.cells[1].innerText
+                  );
+                } else if (sortBy === "price") {
+                  // Sắp xếp theo giá (số)
+                  return (
+                    parseFloat(a.cells[4].innerText) -
+                    parseFloat(b.cells[4].innerText)
+                  );
+                }
+              });
+
+              // Thêm các hàng đã sắp xếp lại vào bảng
+              rows.forEach((row) => table.appendChild(row));
+            }
+
+            document.addEventListener("DOMContentLoaded", fetchRooms);
+          </script>
+        </body>
+      </div>
+
+      <div class="footer">
+        <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+        <p>Version 3.2.0-rc</p>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      function logout() {
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = "dangnhap_ad.html";
+      }
+    </script>
+  </body1>
+</html>

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin GoatBooking</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      body1 {
+        font-family: Arial, sans-serif;
+        overflow: hidden; /* Loại bỏ thanh cuộn của toàn bộ trang */
+        max-height: 100%;
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        color: #fff;
+        position: fixed;
+        width: 250px;
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        transition: width 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .sidebar.collapsed {
+        width: 0;
+        overflow: hidden;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .sidebar a,
+      .sidebar h2 {
+        color: #fff;
+        text-decoration: none;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+      }
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 20px;
+        display: none;
+      }
+      .sidebar .submenu .nav-link {
+        font-size: 14px;
+        padding: 5px 20px;
+        color: #adb5bd;
+      }
+      .sidebar .submenu .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar .badge-info {
+        background-color: #17a2b8;
+      }
+      .sidebar .badge-danger {
+        background-color: #dc3545;
+      }
+      .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .content.collapsed {
+        margin-left: 0;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+      }
+    </style>
+    <style>
+      body2 {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f4f8;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        padding: 10px 20px;
+        color: #fff;
+        font-size: 2em;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        background: linear-gradient(135deg, #007bff, #5bc0de);
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+        margin: 5px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.2s ease;
+        color: rgb(0, 0, 0);
+      }
+
+      .button-add {
+        background-color: #28a745;
+      }
+
+      .button-add:hover {
+        background-color: #218838;
+      }
+
+      .button-edit {
+        background-color: #007bff;
+      }
+
+      .button-edit:hover {
+        background-color: #0056b3;
+      }
+
+      .button-delete {
+        background-color: #dc3545;
+      }
+
+      .button-delete:hover {
+        background-color: #c82333;
+      }
+
+      .button-export {
+        background-color: #6f42c1;
+      }
+
+      .button-export:hover {
+        background-color: #5a32a3;
+      }
+
+      label {
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 0.95em;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: center;
+      }
+
+      th {
+        background: linear-gradient(135deg, #007bff, #5bc0de);
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      th:hover {
+        background: #0056b3;
+        transition: background-color 0.3s ease;
+      }
+
+      .form-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50%;
+        max-width: 400px;
+        max-height: 700px; /* Thiết lập chiều cao tối đa */
+        padding: 10px; /* Giảm padding */
+        background-color: white;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        overflow-y: auto; /* Thêm thanh cuộn dọc nếu nội dung vượt quá chiều cao */
+      }
+
+      #overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
+      /* Responsive styling */
+      @media (max-width: 768px) {
+        h2 {
+          font-size: 1.5em;
+        }
+
+        table,
+        th,
+        td {
+          font-size: 0.85em;
+        }
+
+        button {
+          padding: 6px 8px;
+          font-size: 0.85em;
+        }
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle submenu display
+        const menuItems = document.querySelectorAll(".nav-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const submenu = this.querySelector(".submenu");
+            if (submenu) {
+              submenu.style.display =
+                submenu.style.display === "none" || submenu.style.display === ""
+                  ? "block"
+                  : "none";
+            }
+          });
+        });
+
+        // Toggle sidebar visibility
+        const toggleButton = document.getElementById("sidebarToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("collapsed");
+        });
+      });
+    </script>
+  </head>
+  <body1>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h3 class="text-center mb-4" style="font-size: 40px">
+        Admin <br />GoatBooking
+      </h3>
+      <img
+        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+        alt="Profile"
+        class="rounded-circle mx-auto d-block mb-4"
+        width="100"
+      />
+      <p class="text-center"></p>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tachometer-alt"></i> Trang chủ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="homestay.html">◯ Homestay</a></li>
+            <li><a class="nav-link" href="room.html">◯ Room</a></li>
+            <li><a class="nav-link" href="user.html">◯ User</a></li>
+            <li>
+              <a class="nav-link" href="service.html">◯ Service</a>
+            </li>
+            <li><a class="nav-link" href="review.html">◯ Review</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="tienich.html"
+            ><i class="fas fa-th"></i> Tiện ích
+            <span class="badge badge-danger">New</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-bar"></i> Thống kê
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="thongke_3.html"
+                >◯ User-Homestay-Rooms</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="thongke_2.html">◯ Review - Service</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-pie"></i> Biểu đồ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="bieudotron.html">◯ Biểu đồ tròn</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudoduong.html">◯ Biểu đồ đường</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudocot.html">◯ Biểu đồ cột</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudovung.html">◯ Biểu đồ vùng</a>
+            </li>
+          </ul>
+        </li>
+        <!-- Xem thêm -->
+        <li class="nav-item">
+          <span class="nav-link">Xem thêm</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="lich.html"
+            ><i class="fas fa-calendar-alt"></i> Lịch
+            <span class="badge badge-info">2</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="bosuutap.html"
+            ><i class="fas fa-image"></i>Bộ sưu tập<span
+              class="badge badge-info"
+              >99+</span
+            ></a
+          >
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tools"></i>Hỗ trợ<i
+              class="fas fa-chevron-down"
+            ></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="chat.html">◯ Chat</a></li>
+            <li><a class="nav-link" href="email.html">◯ Mailbox</a></li>
+            <li><a class="nav-link" href="faq.html">◯ FAQ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="datlai.html" onclick="openResetModal()">
+            <i class="fas fa-sync-alt"></i>Đặt lại<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fa fa-user-circle"></i> Tài khoản
+            <i class="fas fa-chevron-down-o"></i
+          ></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>Đăng xuất<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <button
+          id="sidebarToggle"
+          class="btn btn-outline-secondary mr-2"
+          title="Toggle Sidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">Contact</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-comments"></i
+              ><span class="badge badge-danger">3</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="badge badge-warning">15</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-4">
+        <body>
+          <h2>Quản Lý Người Dùng</h2>
+
+          <button
+            class="button button-add"
+            onclick="showAddForm()"
+            style="color: rgb(255, 255, 255)"
+          >
+            Thêm
+          </button>
+          <button
+            class="button button-export"
+            onclick="exportUserData()"
+            style="color: rgb(255, 255, 255)"
+          >
+            Xuất dữ liệu
+          </button>
+
+          <!-- Dropdown for sorting -->
+          <p></p>
+          <label for="sortOptions">Sắp xếp theo:</label>
+          <select id="sortOptions" onchange="sortTable()">
+            <option value="id">ID</option>
+            <option value="name">Tên</option>
+            <option value="gender">Giới Tính</option>
+          </select>
+
+          <p></p>
+          <label for="searchInput">Tìm kiếm:</label>
+          <input
+            type="text"
+            id="searchInput"
+            onkeyup="searchUsers()"
+            placeholder="Nhập dữ liệu..."
+          />
+          <table id="userTable">
+            <thead>
+              <tr>
+                <th>Mã người dùng</th>
+                <th>Tên</th>
+                <th>Giới Tính</th>
+                <th>Email</th>
+                <th>Số Điện Thoại</th>
+                <th>Tên Tài Khoản</th>
+                <th>Ngày tạo</th>
+                <th>Ngày cập nhật</th>
+                <th>Mật Khẩu</th>
+                <th>Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dữ liệu được thêm vào đây -->
+            </tbody>
+          </table>
+
+          <!-- Form for Adding a New User -->
+          <div id="overlay"></div>
+          <div class="form-popup" id="addForm">
+            <h3>Thêm Người Dùng Mới</h3>
+            <label for="addId">MÃ người dùng</label>
+            <input type="text" id="addId" placeholder="Nhập ID" />
+
+            <label for="addName">Tên đầy đủ</label>
+            <input type="text" id="addFullName" placeholder="Nhập tên đầy đủ" />
+
+            <label for="addGender">Giới tính</label>
+            <input type="text" id="addGender" placeholder="1: Nam   0: Nữ" />
+
+            <label for="addEmail">Email</label>
+            <input type="text" id="addEmail" placeholder="Nhập email" />
+
+            <label for="addPhone">Số Điện Thoại</label>
+            <input type="text" id="addPhone" placeholder="Nhập số điện thoại" />
+
+            <label for="addAccountName">Tên Tài Khoản</label>
+            <input
+              type="text"
+              id="addUserName"
+              placeholder="Nhập tên tài khoản"
+            />
+
+            <label for="addPassword">Mật Khẩu</label>
+            <input type="text" id="addPassword" placeholder="Nhập mật khẩu" />
+
+            <button onclick="addUser()">Thêm</button>
+            <button onclick="hideAddForm()">Đóng</button>
+          </div>
+
+          <!-- Form for Editing a User -->
+          <div id="overlay1"></div>
+          <div class="form-popup" id="editForm">
+            <h3>Chỉnh Sửa Người Dùng</h3>
+            <label for="editId">ID</label>
+            <input type="text" id="editId" readonly />
+
+            <label for="editName">Tên đầy đủ</label>
+            <input type="text" id="editName" />
+
+            <label for="editGender">Giới tính</label>
+            <input type="text" id="editGender" placeholder="1: Nam   0: Nữ" />
+
+            <label for="editEmail">Email</label>
+            <input type="text" id="editEmail" />
+
+            <label for="editPhone">Số Điện Thoại</label>
+            <input type="text" id="editPhone" />
+
+            <label for="editAccountName">Tên Tài Khoản</label>
+            <input type="text" id="editUserName" />
+
+            <label for="editPassword">Mật Khẩu</label>
+            <input type="text" id="editPassword" />
+
+            <button onclick="saveEdit()">Lưu</button>
+            <button onclick="hideEditForm()">Đóng</button>
+          </div>
+
+          <script>
+            const apiUrl = "https://localhost:7246/api/Users";
+
+            function goBack() {
+              window.location.href = "admin.html";
+            }
+
+            //hiển thị dữ liệu Users
+            async function fetchUsers() {
+              try {
+                const response = await fetch(apiUrl);
+                if (!response.ok)
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+
+                const tableBody = document
+                  .getElementById("userTable")
+                  .querySelector("tbody");
+                tableBody.innerHTML = "";
+                data.forEach((user) => {
+                  if (user.userId == 0) return;
+                  const createdAt = new Date(
+                    user.createdAt * 1000
+                  ).toLocaleString();
+                  const updatedAt = new Date(
+                    user.updatedAt * 1000
+                  ).toLocaleString();
+                  gender_user = "";
+                  if (user.gender == 1) {
+                    gender_user = "Nam";
+                  } else {
+                    gender_user = "Nữ";
+                  }
+                  const row = document.createElement("tr");
+                  row.innerHTML = `
+                  <td>${user.userId}</td>
+                  <td>${user.fullName}</td>
+                  <td>${gender_user}</td>
+                  <td>${user.email}</td>
+                  <td>${user.phoneNumber}</td>
+                  <td>${user.userName}</td>
+                  <td>${createdAt}</td>
+                  <td>${updatedAt}</td>
+                  <td>${user.password}</td>
+                  <td>
+                    <button class="button-edit" onclick="showEditForm(${user.userId})">Sửa</button>
+                    <button class="button-delete" onclick="deleteUsers(${user.userId})">Xóa</button>
+                  </td>
+                `;
+                  tableBody.appendChild(row);
+                });
+              } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu từ API:", error);
+              }
+            }
+
+            // export data
+
+            function exportUserData() {
+              const table = document.getElementById("userTable");
+              let data = "ID,Tên,Phường,Quận,Tỉnh\n";
+              for (let i = 1; i < table.rows.length; i++) {
+                const row = table.rows[i];
+                for (let j = 0; j < row.cells.length - 1; j++) {
+                  data +=
+                    row.cells[j].innerText +
+                    (j < row.cells.length - 2 ? "," : "");
+                }
+                data += "\n";
+              }
+              const blob = new Blob([data], { type: "text/txt" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "user_data.txt";
+              a.click();
+              URL.revokeObjectURL(url);
+            }
+            // sắp xếp
+            function sortTable() {
+              const table = document.getElementById("userTable");
+              const rows = Array.from(table.rows).slice(1); // Lấy tất cả các hàng (trừ hàng tiêu đề)
+              const sortBy = document.getElementById("sortOptions").value;
+
+              rows.sort((a, b) => {
+                if (sortBy === "id") {
+                  // Sắp xếp theo Mã người dùng (số)
+                  return a.cells[0].innerText - b.cells[0].innerText;
+                } else if (sortBy === "name") {
+                  // Sắp xếp theo Tên (chuỗi)
+                  return a.cells[1].innerText.localeCompare(
+                    b.cells[1].innerText
+                  );
+                } else if (sortBy === "gender") {
+                  // Sắp xếp theo Giới Tính (chuỗi)
+                  return a.cells[2].innerText.localeCompare(
+                    b.cells[2].innerText
+                  );
+                }
+              });
+
+              // Gắn lại các hàng đã sắp xếp vào bảng
+              const tbody = table.querySelector("tbody");
+              tbody.innerHTML = "";
+              rows.forEach((row) => tbody.appendChild(row));
+            }
+
+            //search user
+            async function searchUsers() {
+              const searchInput = document.getElementById("searchInput").value;
+              const response = await fetch(
+                `${apiUrl}/search?search=${encodeURIComponent(searchInput)}`
+              );
+
+              if (!response.ok) {
+                console.error("Lỗi khi tìm kiếm Users:", response.statusText);
+                return;
+              }
+
+              const data = await response.json();
+              const tableBody = document
+                .getElementById("userTable")
+                .querySelector("tbody");
+              tableBody.innerHTML = "";
+
+              if (data.length === 0) {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td colspan="10">Không tìm thấy user nào.</td>`;
+                tableBody.appendChild(row);
+                return;
+              }
+
+              data.forEach((user) => {
+                const createdAt = new Date(
+                  user.createdAt * 1000
+                ).toLocaleString();
+                const updatedAt = new Date(
+                  user.updatedAt * 1000
+                ).toLocaleString();
+                gender_user = "";
+                if (user.gender == 1) {
+                  gender_user = "Nam";
+                } else {
+                  gender_user = "Nữ";
+                }
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                  <td>${user.userId}</td>
+                  <td>${user.fullName}</td>
+                  <td>${gender_user}</td>
+                  <td>${user.email}</td>
+                  <td>${user.phoneNumber}</td>
+                  <td>${user.userName}</td>
+                  <td>${createdAt}</td>
+                  <td>${updatedAt}</td>
+                  <td>${user.password}</td>
+                  <td>
+                    <button class="button-edit" onclick="showEditForm(${user.userId})">Sửa</button>
+                    <button class="button-delete" onclick="deleteHomestay(${user.userId})">Xóa</button>
+                  </td>
+                `;
+                tableBody.appendChild(row);
+              });
+            }
+
+            function showAddForm() {
+              document.getElementById("addForm").style.display = "block";
+              document.getElementById("overlay").style.display = "block";
+            }
+
+            function hideAddForm() {
+              document.getElementById("addForm").style.display = "none";
+              document.getElementById("overlay").style.display = "none";
+            }
+
+            function hideEditForm() {
+              document.getElementById("editForm").style.display = "none";
+              document.getElementById("overlay1").style.display = "none";
+            }
+
+            // xóa
+            async function deleteUsers(id) {
+              if (confirm("Bạn có chắc chắn muốn xóa user này không?")) {
+                try {
+                  const response = await fetch(`${apiUrl}/${id}`, {
+                    method: "DELETE",
+                  });
+                  if (response.ok) {
+                    alert("User đã được xóa thành công!");
+                    fetchUsers();
+                  } else {
+                    const errorData = await response.json();
+                    alert("Lỗi khi xóa User: " + errorData.message);
+                  }
+                } catch (error) {
+                  console.error("Lỗi khi xóa user:", error);
+                  alert("Không thể kết nối đến API.");
+                }
+              }
+            }
+
+            // thêm
+
+            async function addUser() {
+              const user = {
+                userId: Number(document.getElementById("addId").value), // Chuyển giá trị từ input thành Number
+                userName: document.getElementById("addUserName").value,
+                password: document.getElementById("addPassword").value,
+                email: document.getElementById("addEmail").value,
+                phoneNumber: document.getElementById("addPhone").value,
+                gender: parseInt(document.getElementById("addGender").value), // 1: Nam, 0: Nữ
+                fullName: document.getElementById("addFullName").value,
+                createdAt: Math.floor(Date.now() / 1000), // Unix timestamp
+                updatedAt: Math.floor(Date.now() / 1000), // Unix timestamp
+                role: 1, // Bạn có thể thay đổi giá trị này nếu cần
+                avatar: "", // Nếu không có avatar, để là chuỗi rỗng
+              };
+
+              try {
+                const response = await fetch(
+                  "https://localhost:7246/api/Users",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(user),
+                  }
+                );
+
+                if (response.ok) {
+                  const data = await response.json();
+                  alert("Người dùng đã được thêm thành công!");
+                } else {
+                  const errorData = await response.json();
+                  alert("Lỗi khi thêm người dùng: " + errorData.message);
+                }
+              } catch (error) {
+                alert("Đã có lỗi xảy ra: " + error.message);
+              }
+            }
+
+            // sửa user
+            async function showEditForm(id) {
+              try {
+                const response = await fetch(`${apiUrl}/${id}`);
+                if (!response.ok)
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                const user = await response.json();
+
+                gender_user_edit = "";
+                if (user.gender == 1) {
+                  gender_user_edit = "Nam";
+                } else {
+                  gender_user_edit = "Nữ";
+                }
+
+                // Đặt giá trị vào các ô input trong form edit
+                document.getElementById("editId").value = user.userId;
+                document.getElementById("editName").value = user.fullName;
+                document.getElementById("editGender").value = gender_user_edit;
+                document.getElementById("editEmail").value = user.email;
+                document.getElementById("editPhone").value = user.phoneNumber;
+                document.getElementById("editUserName").value = user.userName;
+                document.getElementById("editPassword").value = user.password;
+
+                // Hiển thị form edit và overlay
+                document.getElementById("editForm").style.display = "block";
+                document.getElementById("overlay1").style.display = "block";
+              } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu homestay:", error);
+                alert("Không thể lấy dữ liệu homestay.");
+              }
+            }
+
+            //lưu
+            async function saveEdit(id) {
+              var genderValue =
+                document.getElementById("editGender").value === "Nam" ? 1 : 0; // Giới tính 1: Nam, 0: Nữ
+              const user = {
+                userId: Number(document.getElementById("editId").value), // Sử dụng Number() để chuyển sang số
+                userName: document.getElementById("editUserName").value,
+                password: document.getElementById("editPassword").value,
+                email: document.getElementById("editEmail").value,
+                fullName: document.getElementById("editName").value,
+                phoneNumber: document.getElementById("editPhone").value,
+                gender: genderValue, // Kiểu int cho giới tính
+                createdAt: Math.floor(Date.now() / 1000), // Thời gian Unix timestamp cho createdAt
+                updatedAt: Math.floor(Date.now() / 1000), // Thời gian Unix timestamp cho updatedAt
+                role: 1, // Bạn có thể thay đổi giá trị này nếu cần
+                avatar: "", // Nếu không có avatar, để là chuỗi rỗng
+              };
+
+              try {
+                const response = await fetch(`${apiUrl}/${user.userId}`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(user),
+                });
+
+                if (response.ok) {
+                  alert("user đã được cập nhật thành công!");
+                  hideEditForm();
+                  fetchUsers();
+                } else {
+                  const errorData = await response.json();
+                  alert("Lỗi khi cập nhật User1: " + errorData.message);
+                }
+              } catch (error) {
+                console.error("Lỗi khi cập nhật User:", error);
+                alert("Không thể kết nối đến API.");
+              }
+            }
+
+            document.addEventListener("DOMContentLoaded", fetchUsers());
+          </script>
+        </body>
+      </div>
+
+      <div class="footer">
+        <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+        <p>Version 3.2.0-rc</p>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      function logout() {
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = "dangnhap_ad.html";
+      }
+    </script>
+  </body1>
+</html>

@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin GoatBooking</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        overflow: hidden; /* Loại bỏ thanh cuộn của toàn bộ trang */
+      }
+      .sidebar1 {
+        height: 100vh;
+        background-color: #343a40;
+        color: #fff;
+        position: fixed;
+        width: 250px;
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        transition: width 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .sidebar1.collapsed {
+        width: 0;
+        overflow: hidden;
+      }
+      .sidebar1::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .sidebar1::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .sidebar1 a,
+      .sidebar1 h2 {
+        color: #fff;
+        text-decoration: none;
+      }
+      .sidebar1 a:hover {
+        background-color: #495057;
+      }
+      .sidebar1 .submenu {
+        list-style: none;
+        padding-left: 20px;
+        display: none;
+      }
+      .sidebar1 .submenu .nav-link {
+        font-size: 14px;
+        padding: 5px 20px;
+        color: #adb5bd;
+      }
+      .sidebar1 .submenu .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar1 .badge-info {
+        background-color: #17a2b8;
+      }
+      .sidebar1 .badge-danger {
+        background-color: #dc3545;
+      }
+      .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .content1 {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        height: 700px;
+      }
+      .content1.collapsed {
+        margin-left: 0;
+      }
+      .content1::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .content1::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+      }
+    </style>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body2 {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f4f6fa;
+        width: 110%;
+        margin-top: 0%;
+        margin-left: -5%;
+        border: solid 1px;
+      }
+
+      /* Sidebar styling */
+      .sidebar {
+        width: 240px;
+        background-color: #fff;
+        border-right: 1px solid #ddd;
+        padding: 20px;
+      }
+
+      .sidebar .compose-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #0071c2;
+        color: #fff;
+        text-align: center;
+        font-weight: bold;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-decoration: none;
+      }
+
+      .sidebar ul {
+        list-style: none;
+      }
+
+      .sidebar ul li {
+        padding: 10px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        color: #333;
+        border-radius: 5px;
+      }
+      .sidebar ul li:hover {
+        background-color: #f4f4f4;
+        color: rgb(0, 0, 0);
+      }
+      .sidebar ul li.active {
+        background-color: #0071c2;
+        color: #fff;
+      }
+      .sidebar ul li i {
+        margin-right: 10px;
+      }
+      /* Main content styling */
+      /* Nội dung thư tự động xuống dòng nếu quá dài */
+      .noi-dung {
+        word-break: break-word;
+        white-space: normal;
+        max-width: 300px; /* Giới hạn chiều rộng để nội dung không tràn */
+      }
+      .content {
+        flex: 1;
+        padding: 20px;
+      }
+
+      .content .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .content .header h1 {
+        font-size: 24px;
+        color: #333;
+      }
+
+      .content .search-bar {
+        position: relative;
+        width: 250px;
+      }
+
+      .content .search-bar input {
+        width: 100%;
+        padding: 10px;
+        padding-left: 35px;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+        font-size: 14px;
+      }
+
+      .content .search-bar i {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        color: #aaa;
+      }
+
+      /* Email list styling */
+      .email-list {
+        width: 100%;
+        border-collapse: collapse;
+        display: none; /* Ẩn tất cả các bảng email mặc định */
+      }
+
+      .email-list thead {
+        background-color: #f4f4f4;
+      }
+
+      .email-list th,
+      .email-list td {
+        padding: 12px 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px;
+        color: #333;
+      }
+
+      .email-list th {
+        font-weight: bold;
+      }
+
+      .email-list td .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+
+      .email-list td .star,
+      .email-list td .checkbox {
+        cursor: pointer;
+      }
+
+      .email-list .email-row {
+        transition: background-color 0.2s ease;
+      }
+
+      .email-list .email-row:hover {
+        background-color: #f9f9f9;
+      }
+
+      .email-list .delete-btn {
+        color: red;
+        cursor: pointer;
+      }
+      /* Thêm style cho nút khôi phục */
+      .restore-btn {
+        color: green;
+        cursor: pointer;
+        margin-left: 10px;
+      }
+      /* Dọn dẹp*/
+      .clear-trash-btn {
+        display: none;
+        padding: 10px;
+        background-color: #e74c3c;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      /* Ẩn nút "Xóa" trong Thùng Rác */
+      #trash .delete-btn {
+        display: none;
+      }
+      .star {
+        cursor: pointer;
+      }
+      .star:hover {
+        color: rgb(255, 0, 0);
+      }
+      .star.starred {
+        color: rgb(255, 0, 0);
+      }
+      .content {
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        height: 700px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        height: 700px;
+      }
+      .content.collapsed {
+        margin-left: 0;
+      }
+      .content::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .content::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle submenu display
+        const menuItems = document.querySelectorAll(".nav-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const submenu = this.querySelector(".submenu");
+            if (submenu) {
+              submenu.style.display =
+                submenu.style.display === "none" || submenu.style.display === ""
+                  ? "block"
+                  : "none";
+            }
+          });
+        });
+
+        // Toggle sidebar visibility
+        const toggleButton = document.getElementById("sidebarToggle");
+        const sidebar1 = document.querySelector(".sidebar1");
+        const content1 = document.querySelector(".content1");
+        toggleButton.addEventListener("click", function () {
+          sidebar1.classList.toggle("collapsed");
+          content1.classList.toggle("collapsed");
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar1">
+      <h2 class="text-center mb-4" style="font-size: 40px">
+        Admin <br />GoatBooking
+      </h2>
+      <img
+        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+        alt="Profile"
+        class="rounded-circle mx-auto d-block mb-4"
+        width="100"
+      />
+      <p class="text-center"></p>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tachometer-alt"></i> Trang chủ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="homestay.html">◯ Homestay</a></li>
+            <li><a class="nav-link" href="room.html">◯ Room</a></li>
+            <li><a class="nav-link" href="user.html">◯ User</a></li>
+            <li>
+              <a class="nav-link" href="service.html">◯ Service</a>
+            </li>
+            <li><a class="nav-link" href="review.html">◯ Review</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="tienich.html"
+            ><i class="fas fa-th"></i> Tiện ích
+            <span class="badge badge-danger">New</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-bar"></i> Thống kê
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="thongke_3.html"
+                >◯ User-Homestay-Rooms</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="thongke_2.html">◯ Review - Service</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-pie"></i> Biểu đồ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="bieudotron.html">◯ Biểu đồ tròn</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudoduong.html">◯ Biểu đồ đường</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudocot.html">◯ Biểu đồ cột</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudovung.html">◯ Biểu đồ vùng</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Xem thêm -->
+        <li class="nav-item">
+          <span class="nav-link">Xem thêm</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="lich.html"
+            ><i class="fas fa-calendar-alt"></i> Lịch
+            <span class="badge badge-info">2</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="bosuutap.html"
+            ><i class="fas fa-image"></i>Bộ sưu tập<span
+              class="badge badge-info"
+              >99+</span
+            ></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tools"></i>Hỗ trợ<i
+              class="fas fa-chevron-down"
+            ></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="chat.html">◯ Chat</a></li>
+            <li><a class="nav-link" href="email.html">◯ Mailbox</a></li>
+            <li><a class="nav-link" href="faq.html">◯ FAQ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="datlai.html" onclick="openResetModal()">
+            <i class="fas fa-sync-alt"></i>Đặt lại<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fa fa-user-circle"></i> Tài khoản
+            <i class="fas fa-chevron-down-o"></i
+          ></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>Đăng xuất<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content1">
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <button
+          id="sidebarToggle"
+          class="btn btn-outline-secondary mr-2"
+          title="Toggle Sidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">Contact</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-comments"></i
+              ><span class="badge badge-danger">3</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="badge badge-warning">15</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-4">
+        <body2>
+          <div class="sidebar">
+            <a href="#" class="compose-btn"
+              ><i class="fa fa-pencil"></i> Soạn Thư</a
+            >
+            <ul>
+              <li
+                class="active"
+                data-type="inbox"
+                onclick="hienThiEmail('inbox')"
+              >
+                <i class="fa fa-envelope"></i>Hộp Thư Chính (10)
+              </li>
+              <li data-type="social" onclick="hienThiEmail('social')">
+                <i class="fas fa-users"></i> Xã Hội (17)
+              </li>
+              <li data-type="advertising" onclick="hienThiEmail('advertising')">
+                <i class="fas fa-tag"></i> Quảng Cáo (53)
+              </li>
+              <li data-type="starred" onclick="hienThiEmail('starred')">
+                <i class="fas fa-star"></i> Đã Gắn Sao
+              </li>
+              <li data-type="sent" onclick="hienThiEmail('sent')">
+                <i class="fas fa-paper-plane"></i> Thư Đã Gửi
+              </li>
+              <li data-type="drafts" onclick="hienThiEmail('drafts')">
+                <i class="fas fa-file-alt"></i> Thư Nháp
+              </li>
+              <li data-type="trash" onclick="hienThiEmail('trash')">
+                <i class="fas fa-trash-alt"></i> Thùng Rác
+              </li>
+              <li data-type="restored" onclick="hienThiEmail('restored')">
+                <i class="fas fa-undo"></i> Thư Đã Khôi Phục
+              </li>
+            </ul>
+          </div>
+
+          <div class="content">
+            <div class="header">
+              <h1>Hộp Thư Của Bạn</h1>
+              <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm thư..." />
+              </div>
+            </div>
+
+            <!-- Hộp Thư Chính -->
+            <table class="email-list" id="inbox">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th>Tên Người Gửi</th>
+                  <th>Trạng Thái</th>
+                  <th>Nội Dung</th>
+                  <th>Thời Gian</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Nguyễn Văn A</span>
+                  </td>
+                  <td class="trang-thai">Xác nhận đặt phòng</td>
+                  <td class="noi-dung">
+                    Đặt phòng tại khách sạn Mường Thanh đã được xác nhận thành
+                    công.
+                  </td>
+                  <td class="thoi-gian">08:15 AM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Trần Thị B</span>
+                  </td>
+                  <td class="trang-thai">Xác nhận đặt phòng</td>
+                  <td class="noi-dung">
+                    Đặt phòng tại khách sạn Vinpearl đã được xác nhận thành
+                    công.
+                  </td>
+                  <td class="thoi-gian">10:30 AM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Phạm Minh C</span>
+                  </td>
+                  <td class="trang-thai">Xác nhận đặt phòng</td>
+                  <td class="noi-dung">
+                    Đặt phòng tại khách sạn InterContinental đã được xác nhận
+                    thành công.
+                  </td>
+                  <td class="thoi-gian">11:45 AM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Lê Minh D</span>
+                  </td>
+                  <td class="trang-thai">Xác nhận đặt phòng</td>
+                  <td class="noi-dung">
+                    Đặt phòng tại khách sạn Sofitel đã được xác nhận thành công.
+                  </td>
+                  <td class="thoi-gian">01:00 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Nguyễn Thị E</span>
+                  </td>
+                  <td class="trang-thai">Xác nhận đặt phòng</td>
+                  <td class="noi-dung">
+                    Đặt phòng tại khách sạn Novotel đã được xác nhận thành công.
+                  </td>
+                  <td class="thoi-gian">03:15 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <!-- Các hàng khác tương tự -->
+              </tbody>
+            </table>
+
+            <!-- Các danh mục khác -->
+            <table class="email-list" id="social">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th>Tên Người Gửi</th>
+                  <th>Trạng Thái</th>
+                  <th>Nội Dung</th>
+                  <th>Thời Gian</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Thêm dữ liệu cho danh mục xã hội -->
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Google</span>
+                  </td>
+                  <td class="trang-thai">Bạn có một thông báo mới</td>
+                  <td class="noi-dung">
+                    Google đã gửi cho bạn một thông báo về tài khoản của bạn.
+                  </td>
+                  <td class="thoi-gian">03:30 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Facebook_Logo_2023.png/768px-Facebook_Logo_2023.png"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Facebook</span>
+                  </td>
+                  <td class="trang-thai">Bạn có một thông báo mới</td>
+                  <td class="noi-dung">
+                    Người dùng E đã gửi cho bạn một lời mời tham gia nhóm.
+                  </td>
+                  <td class="thoi-gian">04:00 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://w7.pngwing.com/pngs/59/223/png-transparent-bird-tweet-twitter-twitter-logo-social-media-icon-thumbnail.png"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Twitter</span>
+                  </td>
+                  <td class="trang-thai">Bạn có một thông báo mới</td>
+                  <td class="noi-dung">
+                    Người dùng F đã gửi cho bạn một retweet.
+                  </td>
+                  <td class="thoi-gian">05:15 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Instagram</span>
+                  </td>
+                  <td class="trang-thai">Bạn có một thông báo mới</td>
+                  <td class="noi-dung">
+                    Người dùng G đã bình luận trên bài đăng của bạn.
+                  </td>
+                  <td class="thoi-gian">06:45 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://static.vecteezy.com/system/resources/previews/023/986/970/original/linkedin-logo-linkedin-logo-transparent-linkedin-icon-transparent-free-free-png.png"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">LinkedIn</span>
+                  </td>
+                  <td class="trang-thai">Bạn có một thông báo mới</td>
+                  <td class="noi-dung">
+                    Người dùng H đã gửi cho bạn một lời mời kết nối.
+                  </td>
+                  <td class="thoi-gian">07:30 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <!-- Các hàng khác tương tự -->
+              </tbody>
+            </table>
+
+            <table class="email-list" id="advertising">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th>Tên Người Gửi</th>
+                  <th>Trạng Thái</th>
+                  <th>Nội Dung</th>
+                  <th>Thời Gian</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Thêm dữ liệu cho danh mục quảng cáo -->
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Target_logo.svg"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Target</span>
+                  </td>
+                  <td class="trang-thai">Giảm giá 30% cho sản phẩm mới</td>
+                  <td class="noi-dung">
+                    Mua ngay hôm nay và nhận giảm giá 30% cho các sản phẩm mới
+                    nhất!
+                  </td>
+                  <td class="thoi-gian">12:00 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://corporate.bestbuy.com/wp-content/uploads/2022/11/BBY-logo-white-background.jpeg"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">BestBuy</span>
+                  </td>
+                  <td class="trang-thai">
+                    Khuyến mãi 20% cho tất cả các mặt hàng điện tử
+                  </td>
+                  <td class="noi-dung">
+                    Tất cả sản phẩm điện tử đều được giảm giá 20%, chỉ trong
+                    tuần này!
+                  </td>
+                  <td class="thoi-gian">12:15 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://blog.boon.so/wp-content/uploads/2024/03/Alibaba-Logo-3.png"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Alibaba</span>
+                  </td>
+                  <td class="trang-thai">
+                    Giảm giá 40% cho đơn hàng trên 500k
+                  </td>
+                  <td class="noi-dung">
+                    Mua sắm trên 500k, nhận ngay ưu đãi giảm giá 40% cho tất cả
+                    sản phẩm!
+                  </td>
+                  <td class="thoi-gian">12:45 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://classic.vn/wp-content/uploads/2022/04/logo-shopee.png"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">Shopee</span>
+                  </td>
+                  <td class="trang-thai">
+                    Miễn phí vận chuyển cho đơn hàng từ 200k
+                  </td>
+                  <td class="noi-dung">
+                    Shopee miễn phí vận chuyển cho đơn hàng từ 200k, áp dụng cho
+                    mọi sản phẩm!
+                  </td>
+                  <td class="thoi-gian">01:00 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <tr class="email-row">
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td>
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/217/217436.png"
+                      alt="Avatar"
+                      class="avatar"
+                    />
+                    <span class="ten">eBay</span>
+                  </td>
+                  <td class="trang-thai">
+                    Giảm giá đặc biệt 15% cho các sản phẩm đã giảm giá
+                  </td>
+                  <td class="noi-dung">
+                    Nhận thêm 15% giảm giá cho các sản phẩm đã có sẵn ưu đãi
+                    trên eBay!
+                  </td>
+                  <td class="thoi-gian">01:30 PM</td>
+                  <td>
+                    <span class="delete-btn" onclick="xoaEmail(this)">Xóa</span>
+                  </td>
+                </tr>
+
+                <!-- Các hàng khác tương tự -->
+              </tbody>
+            </table>
+
+            <table class="email-list" id="starred">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th>Tên Người Gửi</th>
+                  <th>Trạng Thái</th>
+                  <th>Nội Dung</th>
+                  <th>Thời Gian</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Thêm dữ liệu cho danh mục đã gắn sao -->
+              </tbody>
+            </table>
+
+            <table class="email-list" id="sent">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th>Tên Người Nhận</th>
+                  <th>Trạng Thái</th>
+                  <th>Nội Dung</th>
+                  <th>Thời Gian</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Thêm dữ liệu cho danh mục thư đã gửi -->
+              </tbody>
+            </table>
+
+            <table class="email-list" id="drafts">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th>Tên Người Nhận</th>
+                  <th>Trạng Thái</th>
+                  <th>Nội Dung</th>
+                  <th>Thời Gian</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Thêm dữ liệu cho danh mục thư nháp -->
+              </tbody>
+            </table>
+
+            <!-- Thùng Rác -->
+            <table class="email-list" id="trash">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th>Tên Người Gửi/Nhận</th>
+                  <th>Trạng Thái</th>
+                  <th>Nội Dung</th>
+                  <th>Thời Gian</th>
+                  <th></th>
+                </tr>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+              </thead>
+              <tbody>
+                <!-- Các mục bị xóa sẽ được thêm vào đây -->
+              </tbody>
+            </table>
+            <button class="clear-trash-btn" onclick="donDepThungRac()">
+              Dọn Dẹp Thùng Rác
+            </button>
+            <table class="email-list" id="restored">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th>Tên Người Gửi/Nhận</th>
+                  <th>Trạng Thái</th>
+                  <th>Nội Dung</th>
+                  <th>Thời Gian</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Các mục đã khôi phục sẽ được thêm vào đây -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Form Soạn Thư -->
+          <div
+            class="compose-form"
+            style="
+              display: none;
+              padding: 20px;
+              border: 1px solid #ddd;
+              margin-bottom: 20px;
+              width: 30%;
+            "
+          >
+            <h2>Soạn Thư Mới</h2>
+            <label for="recipient">Người Nhận:</label>
+            <input
+              type="text"
+              id="recipient"
+              placeholder="Nhập tên tài khoản"
+              style="width: 100%; margin-bottom: 10px; padding: 8px"
+            />
+            <label for="content">Nội Dung:</label>
+            <textarea
+              id="content"
+              rows="5"
+              placeholder="Nhập nội dung thư (tối đa 1000 từ)"
+              style="width: 100%; margin-bottom: 10px; padding: 8px"
+              oninput="checkWordLimit()"
+            ></textarea>
+            <button onclick="guiThu()">Gửi Thư</button>
+            <button onclick="huyThu()">Hủy</button>
+          </div>
+
+          <script>
+            // Kiểm tra giới hạn từ
+            function checkWordLimit() {
+              const contentField = document.getElementById("content");
+              const words = contentField.value.trim().split(/\s+/);
+              if (words.length > 1000) {
+                alert("Nội dung thư không được vượt quá 1000 từ!");
+                contentField.value = words.slice(0, 1000).join(" "); // Cắt bớt nội dung nếu vượt quá giới hạn
+              }
+            }
+
+            // Hiển thị form soạn thư khi nhấn nút "Soạn Thư"
+            document
+              .querySelector(".compose-btn")
+              .addEventListener("click", function () {
+                document.querySelector(".compose-form").style.display = "block";
+              });
+
+            // Hàm gửi thư và lưu vào "Thư đã gửi"
+            function guiThu() {
+              const recipient = document.getElementById("recipient").value;
+              const content = document.getElementById("content").value;
+
+              if (!recipient || !content) {
+                alert("Vui lòng nhập đầy đủ thông tin!");
+                return;
+              }
+
+              const newRow = document.createElement("tr");
+              const timestamp = new Date().toLocaleString("vi-VN", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              });
+
+              newRow.innerHTML = `
+                <td><input type="checkbox" class="checkbox" /></td>
+                <td><span class="star">&#9734;</span></td>
+                <td><img src="https://via.placeholder.com/30" alt="Avatar" class="avatar" /><span class="ten">${recipient}</span></td>
+                <td class="trang-thai">Thư đã gửi</td>
+                <td class="noi-dung">${content}</td>
+                <td class="thoi-gian">${timestamp}</td>
+                <td><span class="delete-btn" onclick="xoaEmail(this)">Xóa</span></td>
+              `;
+
+              const tableBody = document.querySelector("#sent tbody");
+
+              // Chèn hàng mới vào đầu bảng
+              tableBody.insertBefore(newRow, tableBody.firstChild);
+
+              // Ẩn form gửi thư và xóa nội dung trong các ô nhập
+              document.querySelector(".compose-form").style.display = "none";
+              document.getElementById("recipient").value = "";
+              document.getElementById("content").value = "";
+
+              hienThiEmail("sent");
+            }
+
+            // Hàm hủy thư và lưu vào "Thư Nháp"
+            function huyThu() {
+              const recipient = document.getElementById("recipient").value;
+              const content = document.getElementById("content").value;
+
+              if (!recipient && !content) {
+                document.querySelector(".compose-form").style.display = "none";
+                return;
+              }
+
+              const newRow = document.createElement("tr");
+              newRow.innerHTML = `
+            <td><input type="checkbox" class="checkbox" /></td>
+            <td><span class="star">&#9734;</span></td>
+            <td><img src="https://via.placeholder.com/30" alt="Avatar" class="avatar" /><span class="ten">${recipient}</span></td>
+            <td class="trang-thai">Thư nháp</td>
+            <td class="noi-dung">${content}</td>
+            <td class="thoi-gian">${new Date().toLocaleTimeString()}</td>
+            <td><span class="delete-btn" onclick="xoaEmail(this)">Xóa</span></td>
+          `;
+
+              document.querySelector("#drafts tbody").appendChild(newRow);
+
+              document.querySelector(".compose-form").style.display = "none";
+              document.getElementById("recipient").value = "";
+              document.getElementById("content").value = "";
+
+              hienThiEmail("drafts");
+            }
+          </script>
+          <script>
+            function loadSentEmails() {
+              const sentEmails =
+                JSON.parse(localStorage.getItem("sentEmails")) || [];
+              const sentTable = document.querySelector("#sent tbody");
+              sentTable.innerHTML = "";
+
+              // Hiển thị các email đã gửi từ đầu danh sách
+              sentEmails.forEach((email) => {
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                  <td><input type="checkbox" class="checkbox" /></td>
+                  <td><span class="star">&#9734;</span></td>
+                  <td><span class="ten">${email.recipientName}</span></td>
+                   <td class="trang-thai">Thư đã gửi</td>
+                  <td class="noi-dung">${email.content}</td>
+                  <td class="thoi-gian">${email.timestamp}</td>
+                  <td><span class="delete-btn" onclick="xoaEmail(this)">Xóa</span></td>
+                `;
+                sentTable.appendChild(newRow);
+              });
+            }
+
+            document.addEventListener("DOMContentLoaded", loadSentEmails);
+          </script>
+        </body2>
+        <script>
+          function xoaEmail(element) {
+            // Lấy dòng email mà bạn muốn xóa
+            const emailRow = element.closest("tr");
+
+            // Tạo một bản sao của dòng email đó
+            const emailClone = emailRow.cloneNode(true);
+
+            // Thêm nút "Khôi phục" vào bản sao của email
+            const restoreBtn = document.createElement("span");
+            restoreBtn.className = "restore-btn";
+            restoreBtn.innerText = "Khôi phục";
+            restoreBtn.onclick = function () {
+              khoiPhucEmail(restoreBtn);
+            };
+            emailClone.querySelector("td:last-child").appendChild(restoreBtn);
+
+            // Lấy bảng Thùng Rác
+            const trashTable = document
+              .getElementById("trash")
+              .getElementsByTagName("tbody")[0];
+
+            // Thêm dòng email đã xóa vào Thùng Rác
+            trashTable.appendChild(emailClone);
+
+            // Xóa dòng email khỏi bảng hiện tại (ví dụ: bảng Hộp Thư Chính)
+            emailRow.remove();
+          }
+
+          function khoiPhucEmail(element) {
+            // Lấy dòng email mà bạn muốn khôi phục
+            const emailRow = element.closest("tr");
+
+            // Xóa nút "Khôi phục" khỏi dòng email
+            emailRow.querySelector(".restore-btn").remove();
+
+            // Tạo một bản sao của dòng email đó
+            const emailClone = emailRow.cloneNode(true);
+
+            // Lấy bảng "Thư đã khôi phục"
+            const restoredTable = document
+              .getElementById("restored")
+              .getElementsByTagName("tbody")[0];
+
+            // Thêm dòng email vào bảng "Thư đã khôi phục"
+            restoredTable.appendChild(emailClone);
+
+            // Xóa dòng email khỏi bảng Thùng Rác
+            emailRow.remove();
+          }
+          document.addEventListener("DOMContentLoaded", function () {
+            // Lấy tất cả các phần tử có lớp "star" và thêm sự kiện nhấp
+            document.querySelectorAll(".star").forEach((starIcon) => {
+              starIcon.addEventListener("click", function () {
+                toggleStar(starIcon);
+              });
+            });
+          });
+
+          function toggleStar(element) {
+            const emailRow = element.closest("tr");
+            const starredTable = document
+              .getElementById("starred")
+              .querySelector("tbody");
+
+            // Kiểm tra và lưu danh mục gốc nếu chưa có
+            if (!emailRow.hasAttribute("data-original")) {
+              const parentTable = emailRow.closest(".email-list");
+              emailRow.setAttribute("data-original", parentTable.id);
+            }
+
+            // Thêm hoặc xóa lớp "starred"
+            element.classList.toggle("starred");
+
+            if (element.classList.contains("starred")) {
+              // Di chuyển email vào phần "Đã Gắn Sao"
+              starredTable.appendChild(emailRow);
+            } else {
+              // Lấy danh mục gốc và di chuyển email về danh mục đó
+              const originalType = emailRow.getAttribute("data-original");
+              const originalTable = document
+                .getElementById(originalType)
+                .querySelector("tbody");
+              originalTable.appendChild(emailRow);
+            }
+          }
+          function donDepThungRac() {
+            const trashTable = document
+              .getElementById("trash")
+              .getElementsByTagName("tbody")[0];
+            trashTable.innerHTML = "";
+          }
+          function hienThiEmail(type) {
+            // Ẩn tất cả các bảng email
+            const emailLists = document.querySelectorAll(".email-list");
+            emailLists.forEach((list) => (list.style.display = "none"));
+
+            // Hiện bảng email tương ứng
+            const activeList = document.getElementById(type);
+            activeList.style.display = "table";
+
+            // Đánh dấu mục sidebar đang hoạt động
+            const sidebarItems = document.querySelectorAll(".sidebar ul li");
+            sidebarItems.forEach((item) => item.classList.remove("active"));
+            document
+              .querySelector(`.sidebar ul li[data-type="${type}"]`)
+              .classList.add("active");
+
+            // Kiểm tra nếu mục "Thùng Rác" được chọn, hiển thị nút "Dọn Dẹp Thùng Rác"
+            const clearTrashBtn = document.querySelector(".clear-trash-btn");
+            if (type === "trash") {
+              clearTrashBtn.style.display = "inline-block";
+            } else {
+              clearTrashBtn.style.display = "none";
+            }
+          }
+        </script>
+      </div>
+
+      <div class="footer">
+        <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+        <p>Version 3.2.0-rc</p>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      function logout() {
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = "dangnhap_ad.html";
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin GoatBooking</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        overflow: hidden; /* Loại bỏ thanh cuộn của toàn bộ trang */
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        color: #fff;
+        position: fixed;
+        width: 250px;
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        transition: width 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+      }
+      .sidebar.collapsed {
+        width: 0;
+        overflow: hidden;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+      .sidebar a,
+      .sidebar h2 {
+        color: #fff;
+        text-decoration: none;
+      }
+      .sidebar a:hover {
+        background-color: #495057;
+      }
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 20px;
+        display: none;
+      }
+      .sidebar .submenu .nav-link {
+        font-size: 14px;
+        padding: 5px 20px;
+        color: #adb5bd;
+      }
+      .sidebar .submenu .nav-link:hover {
+        background-color: #495057;
+      }
+      .sidebar .badge-info {
+        background-color: #17a2b8;
+      }
+      .sidebar .badge-danger {
+        background-color: #dc3545;
+      }
+      .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s; /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+        height: 700px;
+      }
+      .content.collapsed {
+        margin-left: 0;
+      }
+      .content::-webkit-scrollbar {
+        width: 8px; /* Độ rộng của thanh cuộn */
+      }
+      .content::-webkit-scrollbar-thumb {
+        background-color: #495057; /* Màu của thanh cuộn */
+        border-radius: 4px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: #999;
+      }
+    </style>
+    <style>
+      .chart-container {
+        width: 100%;
+        margin: auto;
+        padding-top: 20px;
+      }
+      .chart-container canvas {
+        margin-bottom: 30px;
+      }
+      #yearSelect {
+        margin: 20px 0;
+        padding: 5px 10px;
+        display: block;
+        width: 150px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toggle submenu display
+        const menuItems = document.querySelectorAll(".nav-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const submenu = this.querySelector(".submenu");
+            if (submenu) {
+              submenu.style.display =
+                submenu.style.display === "none" || submenu.style.display === ""
+                  ? "block"
+                  : "none";
+            }
+          });
+        });
+
+        // Toggle sidebar visibility
+        const toggleButton = document.getElementById("sidebarToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("collapsed");
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2 class="text-center mb-4" style="font-size: 40px">
+        Admin <br />GoatBooking
+      </h2>
+      <img
+        src="street_fighter_6___juri_game_face_feature_by_cr1one_dfbe69b-fullview.jpg"
+        alt="Profile"
+        class="rounded-circle mx-auto d-block mb-4"
+        width="100"
+      />
+      <p class="text-center"></p>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tachometer-alt"></i> Trang chủ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="homestay.html">◯ Homestay</a></li>
+            <li><a class="nav-link" href="room.html">◯ Room</a></li>
+            <li><a class="nav-link" href="user.html">◯ User</a></li>
+            <li>
+              <a class="nav-link" href="service.html">◯ Service</a>
+            </li>
+            <li><a class="nav-link" href="review.html">◯ Review</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="tienich.html"
+            ><i class="fas fa-th"></i> Tiện ích
+            <span class="badge badge-danger">New</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-bar"></i> Thống kê
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="thongke_3.html"
+                >◯ User-Homestay-Rooms</a
+              >
+            </li>
+            <li>
+              <a class="nav-link" href="thongke_2.html">◯ Review - Service</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-chart-pie"></i> Biểu đồ
+            <i class="fas fa-chevron-down"></i
+          ></a>
+          <ul class="submenu">
+            <li>
+              <a class="nav-link" href="bieudotron.html">◯ Biểu đồ tròn</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudoduong.html">◯ Biểu đồ đường</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudocot.html">◯ Biểu đồ cột</a>
+            </li>
+            <li>
+              <a class="nav-link" href="bieudovung.html">◯ Biểu đồ vùng</a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Xem thêm -->
+        <li class="nav-item">
+          <span class="nav-link">Xem thêm</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="lich.html"
+            ><i class="fas fa-calendar-alt"></i> Lịch
+            <span class="badge badge-info">2</span></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="bosuutap.html"
+            ><i class="fas fa-image"></i>Bộ sưu tập<span
+              class="badge badge-info"
+              >99+</span
+            ></a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fas fa-tools"></i>Hỗ trợ<i
+              class="fas fa-chevron-down"
+            ></i
+          ></a>
+          <ul class="submenu">
+            <li><a class="nav-link" href="chat.html">◯ Chat</a></li>
+            <li><a class="nav-link" href="email.html">◯ Mailbox</a></li>
+            <li><a class="nav-link" href="faq.html">◯ FAQ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="datlai.html" onclick="openResetModal()">
+            <i class="fas fa-sync-alt"></i>Đặt lại<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"
+            ><i class="fa fa-user-circle"></i> Tài khoản
+            <i class="fas fa-chevron-down-o"></i
+          ></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>Đăng xuất<i
+              class="fas fa-chevron-down-o"
+            ></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <button
+          id="sidebarToggle"
+          class="btn btn-outline-secondary mr-2"
+          title="Toggle Sidebar"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">Contact</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-comments"></i
+              ><span class="badge badge-danger">3</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="badge badge-warning">15</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="container mt-4">
+        <body2>
+          <h2 style="text-align: center">Biểu đồ Tổng hợp Booking Homestay</h2>
+
+          <!-- Dropdown chọn năm -->
+          <label for="yearSelect" style="text-align: center; display: block"
+            >Chọn năm:</label
+          >
+          <select id="yearSelect">
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+          </select>
+
+          <!-- Biểu đồ tổng hợp 5 mục -->
+          <div class="chart-container">
+            <canvas id="combinedChart" width="400" height="200"></canvas>
+          </div>
+
+          <script>
+            // Đối tượng lưu trữ dữ liệu mặc định cho mỗi năm
+            const yearDataCache = {};
+
+            // Hàm tạo dữ liệu ngẫu nhiên cho từng tháng với xu hướng gợn sóng
+            function generateRandomWaveData(size, min, max) {
+              const data = [];
+              for (let i = 0; i < size; i++) {
+                const value = Math.floor(Math.random() * (max - min + 1)) + min;
+                const wave = Math.sin(i * 0.5) * 50;
+                data.push(value + wave);
+              }
+              return data;
+            }
+
+            // Tạo sẵn dữ liệu cho mỗi năm từ 2020 đến 2024
+            function initializeYearData() {
+              const years = [2020, 2021, 2022, 2023, 2024];
+              years.forEach((year) => {
+                yearDataCache[year] = {
+                  user: generateRandomWaveData(12, 200, 500),
+                  homestay: generateRandomWaveData(12, 50, 150),
+                  service: generateRandomWaveData(12, 30, 100),
+                  room: generateRandomWaveData(12, 10, 50),
+                  rating: generateRandomWaveData(12, 1, 5),
+                };
+              });
+            }
+
+            // Hàm tạo biểu đồ
+            function createCombinedChart(year) {
+              const ctx = document
+                .getElementById("combinedChart")
+                .getContext("2d");
+              const yearData = yearDataCache[year];
+
+              const data = {
+                labels: [
+                  "Tháng 1",
+                  "Tháng 2",
+                  "Tháng 3",
+                  "Tháng 4",
+                  "Tháng 5",
+                  "Tháng 6",
+                  "Tháng 7",
+                  "Tháng 8",
+                  "Tháng 9",
+                  "Tháng 10",
+                  "Tháng 11",
+                  "Tháng 12",
+                ],
+                datasets: [
+                  {
+                    label: "Số lượng User",
+                    data: yearData.user,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    fill: false,
+                    tension: 0.4,
+                  },
+                  {
+                    label: "Số lượng Homestay",
+                    data: yearData.homestay,
+                    borderColor: "rgba(153, 102, 255, 1)",
+                    fill: false,
+                    tension: 0.4,
+                  },
+                  {
+                    label: "Dịch vụ",
+                    data: yearData.service,
+                    borderColor: "rgba(255, 159, 64, 1)",
+                    fill: false,
+                    tension: 0.4,
+                  },
+                  {
+                    label: "Phòng",
+                    data: yearData.room,
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    fill: false,
+                    tension: 0.4,
+                  },
+                  {
+                    label: "Đánh giá sao",
+                    data: yearData.rating,
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    fill: false,
+                    tension: 0.4,
+                  },
+                ],
+              };
+
+              const config = {
+                type: "line",
+                data: data,
+                options: {
+                  responsive: true,
+                  scales: {
+                    x: {
+                      title: {
+                        display: true,
+                        text: "Tháng",
+                      },
+                    },
+                    y: {
+                      title: {
+                        display: true,
+                        text: "Số lượng",
+                      },
+                      beginAtZero: true,
+                    },
+                  },
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: `Biểu đồ Tổng hợp Booking Homestay - Năm ${year}`,
+                    },
+                    legend: {
+                      position: "top",
+                    },
+                  },
+                },
+              };
+
+              new Chart(ctx, config);
+            }
+
+            // Cập nhật biểu đồ khi chọn năm mới
+            document
+              .getElementById("yearSelect")
+              .addEventListener("change", function () {
+                const selectedYear = this.value;
+                if (selectedYear > 2024) {
+                  alert("Năm phải nhỏ hơn hoặc bằng 2024");
+                  this.value = "2024";
+                  return;
+                }
+
+                createCombinedChart(selectedYear);
+              });
+
+            // Khởi tạo dữ liệu mặc định và biểu đồ ban đầu
+            initializeYearData();
+            createCombinedChart("2024");
+          </script>
+        </body2>
+      </div>
+
+      <div class="footer">
+        <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+        <p>Version 3.2.0-rc</p>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      function logout() {
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = "dangnhap_ad.html";
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Interface - Current Location</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+      }
+
+      .map-container {
+        position: relative;
+        width: 90%;
+        max-width: 800px;
+        height: 500px;
+        margin: 50px auto;
+        border: 3px solid #007bff; /* Màu xanh */
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        background: white;
+      }
+
+      #map {
+        height: 100%;
+        width: 100%;
+      }
+
+      .map-header {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 18px;
+        z-index: 999;
+      }
+
+      .error-message {
+        color: red;
+        text-align: center;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="map-container">
+      <div class="map-header">Your Current Location</div>
+      <div id="map"></div>
+    </div>
+    <div class="error-message" id="error-message"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      const map = L.map("map").setView([0, 0], 2); // Mặc định toàn cầu, sẽ cập nhật sau
+      const errorMessage = document.getElementById("error-message");
+
+      // Add OpenStreetMap tiles
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      // Reverse Geocoding function using Nominatim
+      async function getAddress(lat, lon) {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+        );
+        const data = await response.json();
+        return data.display_name; // Trả về địa chỉ đầy đủ
+      }
+
+      // Check if geolocation is available
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            map.setView([latitude, longitude], 13);
+            const address = await getAddress(latitude, longitude);
+            L.marker([latitude, longitude])
+              .addTo(map)
+              .bindPopup(address)
+              .openPopup();
+          },
+          (error) => {
+            let message;
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                message = "Bạn đã từ chối quyền truy cập vị trí.";
+                break;
+              case error.POSITION_UNAVAILABLE:
+                message = "Thông tin vị trí không khả dụng.";
+                break;
+              case error.TIMEOUT:
+                message = "Hệ thống lấy vị trí bị quá thời gian.";
+                break;
+              default:
+                message = "Có lỗi xảy ra khi truy cập vị trí.";
+            }
+            errorMessage.textContent = message;
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      } else {
+        errorMessage.textContent =
+          "Geolocation is not supported by your browser.";
+      }
+    </script>
+  </body>
+</html>
